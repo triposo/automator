@@ -31,6 +31,8 @@ public class ItunesConnect {
   public static void main(String[] args) throws Exception {
     try {
       new ItunesConnect().run();
+    } catch(Exception e) {
+      e.printStackTrace();
     } finally {
       System.exit(0);
     }
@@ -39,8 +41,8 @@ public class ItunesConnect {
   public void run() throws Exception {
     Properties properties = new Properties();
     properties.load(new FileInputStream("local.properties"));
-    username = properties.getProperty("username");
-    password = properties.getProperty("password");
+    username = properties.getProperty("itunes.username");
+    password = properties.getProperty("itunes.password");
 
     String version = "1.4.1";
     String whatsnew =
@@ -56,10 +58,13 @@ public class ItunesConnect {
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
     Yaml yaml = new Yaml();
-    Map guides = (Map) yaml.load(new FileInputStream(new File("pipeline/config/guides.yaml")));
+    Map guides = (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
     for (Iterator iterator = guides.entrySet().iterator(); iterator.hasNext(); ) {
       Map.Entry entry = (Map.Entry) iterator.next();
       String location = (String) entry.getKey();
+      if (!location.equals("Italy")) {
+        continue;
+      }
       Map guide = (Map) entry.getValue();
       Map ios = (Map) guide.get("ios");
       if (ios != null) {
@@ -68,7 +73,7 @@ public class ItunesConnect {
           System.out.println("Processing " + location);
 
           try {
-            uploadScreenshots(location, ios);
+            uploadScreenshots(location, ios, false);
           } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error processing, skipping: " + location);
@@ -108,7 +113,7 @@ public class ItunesConnect {
     }
   }
 
-  private void uploadScreenshots(String location, Map ios) {
+  private void uploadScreenshots(String location, Map ios, boolean newVersion) {
     Integer appleId = (Integer) ios.get("apple_id");
     if (appleId != null && appleId.intValue() > 0) {
       String bundleId = (String) ios.get("bundle_id");
@@ -131,11 +136,20 @@ public class ItunesConnect {
           System.out.println("Last version rejected, skipping: " + appleId);
           return;
         }
-        if (!appSummaryPage.containsText("New Version")) {
-          System.out.println("Doesn't have a new version, skipping: " + appleId);
-          return;
+        VersionDetailsPage versionDetailsPage;
+        if (newVersion) {
+          if (!appSummaryPage.containsText("New Version")) {
+            System.out.println("Doesn't have a new version, skipping: " + appleId);
+            return;
+          }
+          versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
+        } else {
+          if (!appSummaryPage.containsText("Current Version")) {
+            System.out.println("Doesn't have a current version, skipping: " + appleId);
+            return;
+          }
+          versionDetailsPage = appSummaryPage.clickCurrentVersionViewDetails();
         }
-        VersionDetailsPage versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
 
         versionDetailsPage.clickEditUploads();
 
@@ -264,13 +278,19 @@ public class ItunesConnect {
   }
 
   private static class AppSummaryPage extends Page {
+    @FindBy(css = ".left a") WebElement leftHandSideVersionDetails;
     @FindBy(css = ".right a") WebElement rightHandSideVersionDetails;
-    
+
     public AppSummaryPage(WebDriver driver) {
       super(driver);
     }
 
     public VersionDetailsPage clickNewVersionViewDetails() {
+      rightHandSideVersionDetails.click();
+      return new VersionDetailsPage(driver);
+    }
+
+    public VersionDetailsPage clickCurrentVersionViewDetails() {
       rightHandSideVersionDetails.click();
       return new VersionDetailsPage(driver);
     }
