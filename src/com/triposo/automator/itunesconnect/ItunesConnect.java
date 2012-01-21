@@ -1,10 +1,9 @@
-package com.triposo.automator;
+package com.triposo.automator.itunesconnect;
 
-import com.google.common.base.Predicate;
+import com.triposo.automator.Page;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +15,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import org.openqa.selenium.support.ui.FluentWait;
 import org.yaml.snakeyaml.Yaml;
 
 import static com.google.common.base.Predicates.not;

@@ -1,5 +1,6 @@
-package com.triposo.automator;
+package com.triposo.automator.androidmarket;
 
+import com.triposo.automator.Page;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.FindBy;
