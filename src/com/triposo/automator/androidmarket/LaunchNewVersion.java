@@ -1,6 +1,8 @@
 package com.triposo.automator.androidmarket;
 
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.yaml.snakeyaml.Yaml;
 
@@ -14,8 +16,6 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.junit.Assert.assertTrue;
 
 public class LaunchNewVersion {
 
@@ -91,14 +91,4 @@ public class LaunchNewVersion {
     }
     return new AppEditorPage(driver);
   }
-
-  private void touch(File doneFile) {
-    try {
-      FileOutputStream out = new FileOutputStream(doneFile);
-      out.close();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
 }
