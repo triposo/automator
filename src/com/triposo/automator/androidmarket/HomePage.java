@@ -1,5 +1,6 @@
 package com.triposo.automator.androidmarket;
 
+import com.google.common.base.Splitter;
 import com.triposo.automator.Page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -39,21 +40,26 @@ public class HomePage extends Page {
     List<WebElement> rows = appsTable.findElements(By.className("listingRow"));
     for (WebElement row : rows) {
       String text = row.getText();
-      Matcher matcher = Pattern.compile("^(.*) Travel Guide", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE).matcher(text);
-      if (matcher.find()) {
-        System.out.print(matcher.group(1).trim());
-        System.out.print(",");
+      String name = null;
+      String totalInstalls = null;
+      String netInstalls = null;
+      Iterable<String> lines = Splitter.on("\n").split(text);
+      for (String line : lines) {
+        if (name == null) {
+          name = line;
+        } else {
+          Matcher matcher = Pattern.compile("^(.*) total installs").matcher(line);
+          if (matcher.find()) {
+            totalInstalls = matcher.group(1).trim().replaceAll(",", "");
+          }
+          matcher = Pattern.compile("^(.*) net installs").matcher(line);
+          if (matcher.find()) {
+            netInstalls = matcher.group(1).trim().replaceAll(",", "");
+          }
+        }
       }
-      matcher = Pattern.compile("^(.*) total installs", Pattern.MULTILINE).matcher(text);
-      if (matcher.find()) {
-        System.out.print(matcher.group(1).trim().replaceAll(",", ""));
-        System.out.print(",");
-      }
-      matcher = Pattern.compile("^(.*) net installs", Pattern.MULTILINE).matcher(text);
-      if (matcher.find()) {
-        System.out.print(matcher.group(1).trim().replaceAll(",", ""));
-        System.out.print("\n");
-      }
+
+      System.out.println(String.format("%s,%s,%s", name, totalInstalls, netInstalls));
     }
   }
 }

@@ -41,6 +41,7 @@ public class ExtractStats {
       homePage.printStats();
       homePage = homePage.clickNext();
     }
+    homePage.printStats();
   }
 
   private HomePage gotoHome() {
