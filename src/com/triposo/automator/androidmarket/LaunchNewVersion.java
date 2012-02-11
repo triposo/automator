@@ -39,11 +39,11 @@ public class LaunchNewVersion {
     driver.manage().window().setSize(new Dimension(1200, 1000));
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-    String whatsnew = "Check in to places to share your trip with your Facebook friends.";
+    String whatsnew = "Bug fixes.";
 
-    String versionName = "1.5";
-    String versionCode = "117";
-    String sheetName = "1_5";
+    String versionName = "1.5.3";
+    String versionCode = "120";
+    String sheetName = "1_6";
     String folderName = sheetName + "_" + versionName;
     File apksFolder = new File("../../Dropbox/apks/" + folderName);
 
@@ -57,8 +57,7 @@ public class LaunchNewVersion {
         System.out.println("Processing " + location);
 
         try {
-          String packageName = "com.triposo.droidguide." + location.toLowerCase();
-          launchNewVersion(location, packageName, apksFolder, versionCode, whatsnew);
+          launchNewVersion(location, guide, apksFolder, versionCode, whatsnew);
         } catch (Exception e) {
           e.printStackTrace();
           System.out.println("Error processing, skipping: " + location);
@@ -71,10 +70,20 @@ public class LaunchNewVersion {
     System.out.println("All done.");
   }
 
-  private void launchNewVersion(String location, String packageName, File versionRoot, String versionCode, String recentChanges) {
+  private void launchNewVersion(String location, Map guide, File versionRoot, String versionCode, String recentChanges) {
+    String packageName = "com.triposo.droidguide." + location.toLowerCase();
     AppEditorPage appEditorPage = gotoAppEditor(packageName);
     appEditorPage.clickApkFilesTab();
-    appEditorPage.uploadApk(versionCode, new File(versionRoot, location + ".apk"));
+    String appName = (String) guide.get("app_name");
+    if (appName == null) {
+      appName = location;
+    }
+    File apkFile = new File(versionRoot, appName + ".apk");
+    if (!apkFile.isFile()) {
+      System.out.println("Could not find apk for " + location + ". Skipping.");
+      return;
+    }
+    appEditorPage.uploadApk(versionCode, apkFile);
     appEditorPage.clickActivate(versionCode);
     appEditorPage.clickProductDetailsTab();
     appEditorPage.enterRecentChanges(recentChanges);

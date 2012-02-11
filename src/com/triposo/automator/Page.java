@@ -34,6 +34,15 @@ public abstract class Page {
     };
   }
 
+  protected Predicate<String> textIsOnPage() {
+    return new Predicate<String>() {
+      @Override
+      public boolean apply(String text) {
+        return containsText(text);
+      }
+    };
+  }
+
   protected void sleep(int millis) {
     try {
       Thread.sleep(millis);

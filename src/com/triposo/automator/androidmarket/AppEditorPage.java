@@ -99,6 +99,7 @@ public class AppEditorPage extends Page {
 
   public void clickSave() {
     saveButton.click();
+    wait("Saved successfully.").until(textIsOnPage());
   }
 
   public void theLegalBlahBlah() {
@@ -107,7 +108,7 @@ public class AppEditorPage extends Page {
   }
 
   private void check(WebElement checkbox) {
-    if (!"on".equals(checkbox.isSelected())) {
+    if (!checkbox.isSelected()) {
       checkbox.click();
     }
   }
