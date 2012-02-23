@@ -39,10 +39,10 @@ public class LaunchNewVersion {
     driver.manage().window().setSize(new Dimension(1200, 1000));
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-    String whatsnew = "Bug fixes.";
+    String whatsnew = "In this version you can add places you discover!";
 
-    String versionName = "1.5.3";
-    String versionCode = "120";
+    String versionName = "1.6";
+    String versionCode = "122";
     String sheetName = "1_6";
     String folderName = sheetName + "_" + versionName;
     File apksFolder = new File("../../Dropbox/apks/" + folderName);
