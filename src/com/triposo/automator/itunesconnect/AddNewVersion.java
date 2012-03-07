@@ -20,12 +20,12 @@ public class AddNewVersion extends Task {
   }
 
   public void doRun() throws Exception {
-    String version = "1.6";
+    String version = "1.6.1";
     String whatsnew =
-        "- Add your favorite bars, restaurants and sights\n" +
-            "- Easier to find nearby places\n" +
-            "- Better suggestions\n" +
-            "- Improved layout for poi pages\n";
+        "- Bug fixes\n" +
+            "- Speed improvements\n" +
+            "- Data update\n" +
+            "- Better street name labels on maps\n";
 
     Yaml yaml = new Yaml();
     Map guides = (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
