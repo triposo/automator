@@ -48,11 +48,11 @@ public class HomePage extends Page {
         if (name == null) {
           name = line;
         } else {
-          Matcher matcher = Pattern.compile("^(.*) total installs").matcher(line);
+          Matcher matcher = Pattern.compile("^(.*) total user installs").matcher(line);
           if (matcher.find()) {
             totalInstalls = matcher.group(1).trim().replaceAll(",", "");
           }
-          matcher = Pattern.compile("^(.*) net installs").matcher(line);
+          matcher = Pattern.compile("^(.*) active device installs").matcher(line);
           if (matcher.find()) {
             netInstalls = matcher.group(1).trim().replaceAll(",", "");
           }
