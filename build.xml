@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="automator" default="compile">
+
+  <path id="lib.path.id">
+    <fileset dir="lib" includes="*.jar"/>
+  </path>
+
+  <target name="clean">
+    <delete dir="build"/>
+  </target>
+
+  <target name="compile" depends="clean">
+    <mkdir dir="build/compiled"/>
+    <javac destdir="build/compiled" debug="true" includeantruntime="false">
+      <src path="src"/>
+      <classpath refid="lib.path.id"/>
+    </javac>
+  </target>
+
+</project>
