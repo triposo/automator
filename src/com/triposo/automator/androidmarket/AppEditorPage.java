@@ -24,6 +24,8 @@ public class AppEditorPage extends Page {
   WebElement uploadDialog;
   @FindBy(id = "gwt-debug-app_editor-locale-recent_changes-text_area")
   WebElement recentChanges;
+  @FindBy(id = "gwt-debug-privacy_policy")
+  WebElement privacyPolicy;
   @FindBy(id = "gwt-debug-multiple_apk-save_button")
   WebElement saveButton;
   @FindBy(id = "gwt-debug-multiple_apk-product_detail_tab")
@@ -95,6 +97,11 @@ public class AppEditorPage extends Page {
   public void enterRecentChanges(String recentChanges) {
     this.recentChanges.clear();
     this.recentChanges.sendKeys(recentChanges);
+  }
+
+  public void enterPrivacyPolicyLink(String privacyPolicy) {
+    this.privacyPolicy.clear();
+    this.privacyPolicy.sendKeys(privacyPolicy);
   }
 
   public void clickSave() {

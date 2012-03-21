@@ -39,11 +39,12 @@ public class LaunchNewVersion {
     driver.manage().window().setSize(new Dimension(1200, 1000));
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-    String whatsnew = "In this version you can add places you discover!";
+    String whatsnew = "* new suggestion engine\n" +
+        "* bug fixes";
 
-    String versionName = "1.6";
-    String versionCode = "122";
-    String sheetName = "1_6";
+    String versionName = "1.6.6";
+    String versionCode = "126";
+    String sheetName = "1_7";
     String folderName = sheetName + "_" + versionName;
     File apksFolder = new File("../../Dropbox/apks/" + folderName);
 
@@ -88,6 +89,7 @@ public class LaunchNewVersion {
     appEditorPage.clickProductDetailsTab();
     appEditorPage.enterRecentChanges(recentChanges);
     appEditorPage.theLegalBlahBlah();
+    appEditorPage.enterPrivacyPolicyLink("http://triposo.com/tandc.html");
     appEditorPage.clickSave();
   }
 
