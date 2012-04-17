@@ -36,6 +36,10 @@ public class AppEditorPage extends Page {
   WebElement exportLawsCheckbox;
   @FindBy(id = "gwt-debug-apk_list-simple_mode_link")
   WebElement simpleModeLink;
+  @FindBy(id = "gwt-debug-multiple_apk-unpublish_button")
+  WebElement unpublishButton;
+  @FindBy(id = "gwt-debug-multiple_apk-publish_button")
+  WebElement publishButton;
 
   public AppEditorPage(WebDriver driver) {
     super(driver);
@@ -117,6 +121,21 @@ public class AppEditorPage extends Page {
   private void check(WebElement checkbox) {
     if (!checkbox.isSelected()) {
       checkbox.click();
+    }
+  }
+
+  public void clickUnpublish() {
+    unpublishButton.click();
+  }
+
+  public void clickPublishIfNecessary() {
+    try {
+      if (publishButton.isDisplayed()) {
+        publishButton.click();
+      }
+    } catch (Exception e) {
+      // Let's ignore this if it happens.
+      e.printStackTrace();
     }
   }
 }

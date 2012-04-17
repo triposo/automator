@@ -1,6 +1,7 @@
 package com.triposo.automator.androidmarket;
 
 import com.triposo.automator.Page;
+import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -23,5 +24,14 @@ public class SigninPage extends Page {
     this.password.clear();
     this.password.sendKeys(password);
     signIn.click();
+  }
+
+  public void waitForAppListLoaded() {
+    try {
+      wait("All Google Play Android app listings").until(textIsOnPage());
+      wait("Amsterdam").until(textIsOnPage());
+    } catch (UnhandledAlertException e) {
+      driver.switchTo().alert().dismiss();
+    }
   }
 }

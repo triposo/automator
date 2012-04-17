@@ -22,7 +22,7 @@ public abstract class Page {
   }
 
   protected <T> FluentWait<T> wait(T input) {
-    return new FluentWait<T>(input).withTimeout(10, TimeUnit.SECONDS);
+    return new FluentWait<T>(input).withTimeout(30, TimeUnit.SECONDS);
   }
 
   protected Predicate<WebElement> isDisplayed() {

@@ -20,14 +20,13 @@ public class AddNewVersion extends Task {
   }
 
   public void doRun() throws Exception {
-    String version = "1.6.1";
+    String version = "1.7.1";
     String whatsnew =
-        "- Bug fixes\n" +
-            "- Speed improvements\n" +
-            "- Data update\n" +
-            "- Better street name labels on maps\n";
+            "★ Travel dashboard with currency converter, weather and useful phrases\n" +
+                    "★ Smart suggestions on the front page of the guide\n" +
+                    "★ More content!";
 
-    Yaml yaml = new Yaml();
+      Yaml yaml = new Yaml();
     Map guides = (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
     for (Iterator iterator = guides.entrySet().iterator(); iterator.hasNext(); ) {
       Map.Entry entry = (Map.Entry) iterator.next();
@@ -62,15 +61,16 @@ public class AddNewVersion extends Task {
       System.out.println("Last version rejected, skipping: " + appleId);
       return;
     }
+    VersionDetailsPage versionDetailsPage;
     if (!appSummaryPage.containsText(version)) {
       NewVersionPage newVersionPage = appSummaryPage.clickAddVersion();
       newVersionPage.setVersionNumber(version);
       newVersionPage.setWhatsnew(whatsnew);
-      newVersionPage.clickSave();
+      versionDetailsPage = newVersionPage.clickSave();
+    } else {
+      versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
     }
-    assertTrue("New version was not added for some reason.", appSummaryPage.containsText(version));
-    if (appSummaryPage.containsText("Prepare for Upload")) {
-      VersionDetailsPage versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
+    if (appSummaryPage.containsText("Prepare for Upload") || appSummaryPage.containsText("Developer Rejected")) {
       LegalIssuesPage legalIssuesPage = versionDetailsPage.clickReadyToUploadBinary();
       legalIssuesPage.theUsualBlahBlah();
       AutoReleasePage autoReleasePage = legalIssuesPage.clickSave();

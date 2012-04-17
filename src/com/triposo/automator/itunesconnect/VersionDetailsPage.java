@@ -24,6 +24,7 @@ class VersionDetailsPage extends Page {
   @FindBy(id = "fileInput_iPadScreenshots") WebElement ipadScreenshotUpload;
   @FindBy(css = "#iPadScreenshots .lcUploadSpinner") WebElement ipadUploadSpinner;
   @FindBy(css = ".wrapper-topright-button input") private WebElement readyToUploadBinary;
+  @FindBy(linkText = "Binary Details") private WebElement binaryDetailsLink;
 
   public VersionDetailsPage(WebDriver driver) {
     super(driver);
@@ -105,5 +106,10 @@ class VersionDetailsPage extends Page {
   public LegalIssuesPage clickReadyToUploadBinary() {
     readyToUploadBinary.click();
     return new LegalIssuesPage(driver);
+  }
+
+  public BinaryDetailsPage clickBinaryDetails() {
+    binaryDetailsLink.click();
+    return new BinaryDetailsPage(driver);
   }
 }

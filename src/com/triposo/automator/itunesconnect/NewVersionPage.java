@@ -25,7 +25,8 @@ class NewVersionPage extends Page {
     this.whatsnew.sendKeys(whatsnew);
   }
 
-  public void clickSave() {
+  public VersionDetailsPage clickSave() {
     save.click();
+    return new VersionDetailsPage(driver);
   }
 }
