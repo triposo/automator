@@ -9,14 +9,14 @@ import java.io.FileInputStream;
 import java.util.Iterator;
 import java.util.Map;
 
-public class ChangeVersion extends Task {
+public class SetReadyToUpload extends Task {
 
   public static void main(String[] args) throws Exception {
-    new ChangeVersion().run();
+    new SetReadyToUpload().run();
   }
 
   public void doRun() throws Exception {
-    String version = "1.7.2";
+    String version = "1.7.1";
     String whatsnew =
             "★ Travel dashboard with currency converter, weather and useful phrases\n" +
                     "★ Smart suggestions on the front page of the guide\n" +
@@ -35,7 +35,7 @@ public class ChangeVersion extends Task {
           System.out.println("Processing " + location);
 
           try {
-            changeVersion(appleId, version);
+            setReadyToUpload(appleId, version, whatsnew);
           } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error processing, skipping: " + location);
@@ -49,12 +49,20 @@ public class ChangeVersion extends Task {
     System.out.println("All done.");
   }
 
-  private void changeVersion(Integer appleId, String version) {
+  private void setReadyToUpload(Integer appleId, String version, String whatsnew) {
     ManageApplicationsPage manageApplicationsPage = gotoItunesConnect(getProperty("itunes.username"), getProperty("itunes.password")).gotoManageApplications();
     SearchResultPage searchResultPage = manageApplicationsPage.searchByAppleId(appleId);
     AppSummaryPage appSummaryPage = searchResultPage.clickFirstResult();
+    if (appSummaryPage.containsText("The most recent version of your app has been rejected")) {
+      System.out.println("Last version rejected, skipping: " + appleId);
+      return;
+    }
     VersionDetailsPage versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
-    versionDetailsPage.changeVersionNumber(version);
+    LegalIssuesPage legalIssuesPage = versionDetailsPage.clickReadyToUploadBinary();
+    legalIssuesPage.theUsualBlahBlah();
+    AutoReleasePage autoReleasePage = legalIssuesPage.clickSave();
+    autoReleasePage.setAutoReleaseYes();
+    autoReleasePage.clickSave();
   }
 
   private MainPage gotoItunesConnect(String username, String password) {
