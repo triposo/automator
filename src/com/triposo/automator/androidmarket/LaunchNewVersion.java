@@ -110,7 +110,7 @@ public class LaunchNewVersion {
     appEditorPage.clickProductDetailsTab();
     appEditorPage.enterRecentChanges(recentChanges);
     appEditorPage.theLegalBlahBlah();
-    appEditorPage.enterPrivacyPolicyLink("http://triposo.com/tandc.html");
+    appEditorPage.enterPrivacyPolicyLink("http://www.triposo.com/tandc.html");
     appEditorPage.clickSave();
     appEditorPage.clickPublishIfNecessary();
   }

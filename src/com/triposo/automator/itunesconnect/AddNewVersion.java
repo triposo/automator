@@ -20,11 +20,9 @@ public class AddNewVersion extends Task {
   }
 
   public void doRun() throws Exception {
-    String version = "1.7.1";
+    String version = "1.7.3";
     String whatsnew =
-            "★ Travel dashboard with currency converter, weather and useful phrases\n" +
-                    "★ Smart suggestions on the front page of the guide\n" +
-                    "★ More content!";
+            "★ Fixes a crash.";
 
       Yaml yaml = new Yaml();
     Map guides = (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
