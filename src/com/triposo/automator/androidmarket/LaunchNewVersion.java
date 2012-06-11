@@ -60,7 +60,7 @@ public class LaunchNewVersion {
     String versionCode = "131";
     String sheetName = "22";
     String folderName = sheetName + "-" + versionName;
-    File apksFolder = new File("../../Dropbox/apks/" + folderName);
+    File apksFolder = new File("apks/" + folderName);
 
     driver.get(rootUrl());
     SigninPage signinPage = new SigninPage(driver);
