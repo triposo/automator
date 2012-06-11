@@ -42,17 +42,22 @@ public class LaunchNewVersion {
     driver.manage().window().setSize(new Dimension(1200, 1000));
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-    String whatsnew = "Refreshed map includes a compass and indicates precision of the GPS reading\n" +
-        "Country suggestions (for country guides) including descriptions of local dishes & recommendations what to eat\n" +
-        "Bug fixes & UI improvements\n" +
-        "Redesigned home screen & improved guide search\n" +
-        "Quickly see nearby locations (in a country guide)\n" +
-        "Add places you discover when you are near them\n" +
-        "New suggestions engine";
+    String whatsnew = "1.7\n" +
+        "- Smart travel suggestions on the main screen\n" +
+        "- Location tools: weather, currency converter, phrasebook\n" +
+        "- \"Read to me\" option for longer texts\n" +
+        "- Map scale\n" +
+        "- Tour prices in device's currency\n" +
+        "- Add place directly on map by long-tapping\n" +
+        "- Bug fixes and optimizations\n" +
+        "Data:\n" +
+        "- Now includes smaller pittoresque cities that invite discovery\n" +
+        "- Health, Safety & Money POIs for your practical needs\n" +
+        "- Travelpedia provides background articles";
 
-    String versionName = "1.6.8";
-    String versionCode = "128";
-    String sheetName = "19";
+    String versionName = "1.7.2";
+    String versionCode = "131";
+    String sheetName = "22";
     String folderName = sheetName + "-" + versionName;
     File apksFolder = new File("../../Dropbox/apks/" + folderName);
 
