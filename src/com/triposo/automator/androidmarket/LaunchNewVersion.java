@@ -1,5 +1,6 @@
 package com.triposo.automator.androidmarket;
 
+import com.google.common.base.Preconditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
@@ -121,13 +122,19 @@ public class LaunchNewVersion {
   }
 
   private AppEditorPage gotoAppEditor(String packageName) {
-    driver.get(rootUrl() + "#AppEditorPlace:p=" + packageName);
-    if (driver.findElement(By.cssSelector("body")).getText().contains("Password")) {
+    String url = rootUrl() + "#AppEditorPlace:p=" + packageName;
+    driver.get(url);
+    if (isSigninPage()) {
       SigninPage signinPage = new SigninPage(driver);
       signinPage.signin(properties.getProperty("android.username"), properties.getProperty("android.password"));
-      driver.get("https://market.android.com/publish/Home#AppEditorPlace:p=" + packageName);
+      driver.get(url);
+      Preconditions.checkArgument(!isSigninPage(), "Cannot signin");
     }
     return new AppEditorPage(driver);
+  }
+
+  private boolean isSigninPage() {
+    return driver.findElement(By.cssSelector("body")).getText().contains("Password");
   }
 
   private String getDevAccountId() {
