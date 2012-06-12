@@ -52,7 +52,7 @@ public class LaunchNewVersion extends MarketTask {
       Map.Entry entry = (Map.Entry) iterator.next();
       String location = (String) entry.getKey();
       if (alreadyLaunchedGuides.contains(location.toLowerCase(Locale.US))) {
-        System.out.println("Skipping because it seems already updated: " + location);
+        System.out.println("Skipping because app already updated: " + location);
         continue;
       }
       if (location.equals("world")) {
@@ -65,9 +65,11 @@ public class LaunchNewVersion extends MarketTask {
         try {
           launchNewVersion(location, guide, apksFolder, versionCode, whatsnew);
           System.out.println("Done " + location);
+        } catch (AppMissingException e) {
+          System.out.println("Skipping because app not yet launched: " + location);
         } catch (Exception e) {
           e.printStackTrace();
-          System.out.println("Error processing, skipping: " + location);
+          System.out.println("Skipping because operation failed: " + location);
         }
       }
     }

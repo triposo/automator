@@ -43,7 +43,7 @@ public class UnpublishAll extends MarketTask {
     System.out.println("All done.");
   }
 
-  private void unpublishAll(String location) {
+  private void unpublishAll(String location) throws AppMissingException {
     String packageName = "com.triposo.droidguide." + location.toLowerCase();
     AppEditorPage appEditorPage = gotoAppEditor(packageName);
     appEditorPage.clickUnpublish();

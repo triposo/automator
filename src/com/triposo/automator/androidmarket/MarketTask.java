@@ -3,6 +3,7 @@ package com.triposo.automator.androidmarket;
 import com.google.common.base.Preconditions;
 import com.triposo.automator.Task;
 import org.openqa.selenium.By;
+import org.openqa.selenium.UnhandledAlertException;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -26,9 +27,11 @@ public abstract class MarketTask extends Task {
     return "https://play.google.com/apps/publish/Home?dev_acc=" + getDevAccountId();
   }
 
-  protected AppEditorPage gotoAppEditor(String packageName) {
+  protected AppEditorPage gotoAppEditor(String packageName) throws AppMissingException {
     gotoPage(rootUrl() + "#AppEditorPlace:p=" + packageName);
-    return new AppEditorPage(driver);
+    AppEditorPage appEditorPage = new AppEditorPage(driver);
+    appEditorPage.waitForTabsLoaded();
+    return appEditorPage;
   }
 
   protected void gotoPage(String url) {
