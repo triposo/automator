@@ -1,10 +1,12 @@
 package com.triposo.automator.androidmarket;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +50,9 @@ public class LaunchNewVersion extends MarketTask {
     Set<String> alreadyLaunchedGuides = getAlreadyLaunchedGuides(versionName);
     System.out.println("Already launched: " + alreadyLaunchedGuides);
     Map guides = getGuides();
+    List<String> tooBig = Lists.newArrayList();
+    List<String> notYetLaunched = Lists.newArrayList();
+    List<String> failed = Lists.newArrayList();
     for (Iterator iterator = guides.entrySet().iterator(); iterator.hasNext(); ) {
       Map.Entry entry = (Map.Entry) iterator.next();
       String location = (String) entry.getKey();
@@ -65,9 +70,14 @@ public class LaunchNewVersion extends MarketTask {
         try {
           launchNewVersion(location, guide, apksFolder, versionCode, whatsnew);
           System.out.println("Done " + location);
+        } catch (ApkTooBigException e) {
+          tooBig.add(location);
+          System.out.println("Skipping because apk too big: " + e.getMessage());
         } catch (AppMissingException e) {
+          notYetLaunched.add(location);
           System.out.println("Skipping because app not yet launched: " + location);
         } catch (Exception e) {
+          failed.add(location);
           e.printStackTrace();
           System.out.println("Skipping because operation failed: " + location);
         }
@@ -75,6 +85,9 @@ public class LaunchNewVersion extends MarketTask {
     }
 
     System.out.println("All done.");
+    System.out.println("Too big: " + tooBig);
+    System.out.println("Not yet launched: " + notYetLaunched);
+    System.out.println("Failed: " + failed);
   }
 
   private Set<String> getAlreadyLaunchedGuides(String versionName) {
@@ -100,7 +113,7 @@ public class LaunchNewVersion extends MarketTask {
       throw new FileNotFoundException(apkFile.toString());
     }
     if (apkFile.length() > MAX_APK_SIZE_MB * 1024 * 1024) {
-      throw new Exception("APK too big: " + location + ", " + apkFile.length());
+      throw new ApkTooBigException(location + ", " + apkFile.length());
     }
 
     String packageName = "com.triposo.droidguide." + location.toLowerCase();
@@ -114,5 +127,11 @@ public class LaunchNewVersion extends MarketTask {
     appEditorPage.enterPrivacyPolicyLink("http://triposo.com/tandc.html");
     appEditorPage.clickSave();
     appEditorPage.clickPublishIfNecessary();
+  }
+
+  private class ApkTooBigException extends Exception {
+    public ApkTooBigException(String s) {
+      super(s);
+    }
   }
 }
