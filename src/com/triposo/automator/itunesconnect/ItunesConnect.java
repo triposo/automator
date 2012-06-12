@@ -1,24 +1,19 @@
 package com.triposo.automator.itunesconnect;
 
-import com.triposo.automator.Page;
+import com.google.common.base.Preconditions;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.FindBy;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.yaml.snakeyaml.Yaml;
-
-import static com.google.common.base.Predicates.not;
-import static org.junit.Assert.assertTrue;
 
 public class ItunesConnect {
 
@@ -99,7 +94,7 @@ public class ItunesConnect {
       newVersionPage.setWhatsnew(whatsnew);
       newVersionPage.clickSave();
     }
-    assertTrue("New version was not added for some reason.", appSummaryPage.containsText(version));
+    Preconditions.checkArgument(appSummaryPage.containsText(version), "New version was not added for some reason.");
     if (appSummaryPage.containsText("Prepare for Upload")) {
       VersionDetailsPage versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
       LegalIssuesPage legalIssuesPage = versionDetailsPage.clickReadyToUploadBinary();

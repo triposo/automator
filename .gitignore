@@ -1,4 +1,7 @@
 *.log
 local.properties
+/C:\\nppdf32Log\\debuglog.txt
 /apks
 /build
+/lib/*.jar
+/out
