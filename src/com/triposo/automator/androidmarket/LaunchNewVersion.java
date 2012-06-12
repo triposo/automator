@@ -10,6 +10,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -21,8 +22,11 @@ import java.util.logging.Logger;
 
 public class LaunchNewVersion {
 
-  private WebDriver driver;
+  private static final int MAX_APK_SIZE_MB = 50;
+
   private final Properties properties = new Properties();
+
+  private WebDriver driver;
 
   public static void main(String[] args) throws Exception {
     try {
@@ -87,12 +91,11 @@ public class LaunchNewVersion {
 
         try {
           launchNewVersion(location, guide, apksFolder, versionCode, whatsnew);
+          System.out.println("Done " + location);
         } catch (Exception e) {
           e.printStackTrace();
           System.out.println("Error processing, skipping: " + location);
         }
-
-        System.out.println("Done " + location);
       }
     }
 
@@ -116,15 +119,17 @@ public class LaunchNewVersion {
     return "https://play.google.com/apps/publish/Home?dev_acc=" + getDevAccountId();
   }
 
-  private void launchNewVersion(String location, Map guide, File versionRoot, String versionCode, String recentChanges) {
+  private void launchNewVersion(String location, Map guide, File versionRoot, String versionCode, String recentChanges) throws Exception {
     String appName = (String) guide.get("app_name");
     if (appName == null) {
       appName = location;
     }
     File apkFile = new File(versionRoot, appName + ".apk");
     if (!apkFile.isFile()) {
-      System.out.println("Could not find apk for " + location + ". Skipping.");
-      return;
+      throw new FileNotFoundException(apkFile.toString());
+    }
+    if (apkFile.length() > MAX_APK_SIZE_MB * 1024 * 1024) {
+      throw new Exception("APK too big: " + location + ", " + apkFile.length());
     }
 
     String packageName = "com.triposo.droidguide." + location.toLowerCase();
