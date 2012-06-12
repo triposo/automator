@@ -1,20 +1,20 @@
 package com.triposo.automator.androidmarket;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -67,11 +67,17 @@ public class LaunchNewVersion {
     signinPage.signin(properties.getProperty("android.username"), properties.getProperty("android.password"));
     signinPage.waitForAppListLoaded();
 
+    Set<String> alreadyLaunchedGuides = getAlreadyLaunchedGuides(versionName);
+    System.out.println("Already launched: " + alreadyLaunchedGuides);
     Yaml yaml = new Yaml();
     Map guides = (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
     for (Iterator iterator = guides.entrySet().iterator(); iterator.hasNext(); ) {
       Map.Entry entry = (Map.Entry) iterator.next();
       String location = (String) entry.getKey();
+      if (alreadyLaunchedGuides.contains(location.toLowerCase(Locale.US))) {
+        System.out.println("Skipping because it seems already updated: " + location);
+        continue;
+      }
       if (location.equals("world")) {
         continue;
       }
@@ -91,6 +97,19 @@ public class LaunchNewVersion {
     }
 
     System.out.println("All done.");
+  }
+
+  private Set<String> getAlreadyLaunchedGuides(String versionName) {
+    Set<String> locations = Sets.newHashSet();
+    HomePage homePage = gotoHome();
+    while (true) {
+      locations.addAll(homePage.getAlreadyLaunched(versionName));
+      if (!homePage.hasNext()) {
+        break;
+      }
+      homePage = homePage.clickNext();
+    }
+    return locations;
   }
 
   private String rootUrl() {
@@ -123,6 +142,16 @@ public class LaunchNewVersion {
 
   private AppEditorPage gotoAppEditor(String packageName) {
     String url = rootUrl() + "#AppEditorPlace:p=" + packageName;
+    gotoPage(url);
+    return new AppEditorPage(driver);
+  }
+
+  private HomePage gotoHome() {
+    gotoPage(rootUrl());
+    return new HomePage(driver);
+  }
+
+  private void gotoPage(String url) {
     driver.get(url);
     if (isSigninPage()) {
       SigninPage signinPage = new SigninPage(driver);
@@ -130,7 +159,6 @@ public class LaunchNewVersion {
       driver.get(url);
       Preconditions.checkArgument(!isSigninPage(), "Cannot signin");
     }
-    return new AppEditorPage(driver);
   }
 
   private boolean isSigninPage() {
