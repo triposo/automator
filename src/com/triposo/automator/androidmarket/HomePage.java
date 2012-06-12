@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.triposo.automator.Page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -85,5 +86,14 @@ public class HomePage extends Page {
       guides.add(app);
     }
     return guides;
+  }
+
+  public void waitForAppListLoaded() {
+    try {
+      wait("All Google Play Android app listings").until(textIsOnPage());
+      wait("Amsterdam").until(textIsOnPage());
+    } catch (UnhandledAlertException e) {
+      driver.switchTo().alert().dismiss();
+    }
   }
 }
