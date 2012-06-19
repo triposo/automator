@@ -20,11 +20,13 @@ public class AddNewVersion extends Task {
   }
 
   public void doRun() throws Exception {
-    String version = "1.7.3";
+    String version = "1.8";
     String whatsnew =
-            "★ Fixes a crash.";
+            "★ Sync bookmarks between devices and our website.\n" +
+                "★ Travelpedia.\n" +
+                "★ Bugfixes.";
 
-      Yaml yaml = new Yaml();
+    Yaml yaml = new Yaml();
     Map guides = (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
     for (Iterator iterator = guides.entrySet().iterator(); iterator.hasNext(); ) {
       Map.Entry entry = (Map.Entry) iterator.next();
@@ -81,9 +83,13 @@ public class AddNewVersion extends Task {
     driver.get("https://itunesconnect.apple.com");
     if (driver.findElement(By.cssSelector("body")).getText().contains("Password")) {
       SigninPage signinPage = new SigninPage(driver);
-      return signinPage.signin(username, password);
-    } else {
-      return new MainPage(driver);
+      signinPage.signin(username, password);
     }
+    try {
+      WebElement continueButton = driver.findElement(By.cssSelector("img.customActionButton"));
+      continueButton.click();
+    } catch (NoSuchElementException e) {
+    }
+    return new MainPage(driver);
   }
 }
