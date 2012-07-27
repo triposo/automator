@@ -2,7 +2,7 @@
 
 <project name="automator" default="compile" xmlns:ivy="antlib:org.apache.ivy.ant">
 
-  <property name="chromedriver.jar" value="lib/linux64/chromedriver_linux64_20.0.1133.0.zip"/>
+  <property name="chromedriver.jar" value="lib/linux64/chromedriver_linux64_21.0.1180.4.zip"/>
   <property name="chromedriver.executable" value="chromedriver"/>
 
   <path id="lib.path.id">
