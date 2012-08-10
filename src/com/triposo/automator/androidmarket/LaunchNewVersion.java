@@ -26,22 +26,24 @@ public class LaunchNewVersion extends MarketTask {
     Logger logger = Logger.getLogger("");
     logger.setLevel(Level.OFF);
 
-    String whatsnew = "1.7\n" +
-        "- Smart travel suggestions on the main screen\n" +
-        "- Location tools: weather, currency converter, phrasebook\n" +
-        "- \"Read to me\" option for longer texts\n" +
-        "- Map scale\n" +
-        "- Tour prices in device's currency\n" +
-        "- Add place directly on map by long-tapping\n" +
-        "- Bug fixes and optimizations\n" +
+    // To be changed when launching:
+    String whatsnew = "1.8\n" +
+        "- Bookmarks synchronization between devices and website, if you authenticate with your Facebook account;\n" +
+        "- Closeby place as first suggestion, if any;\n" +
+        "- Bug fixes and optimizations;\n" +
+        "\n" +
+        "1.7\n" +
+        "- Smart travel suggestions on the main screen;\n" +
+        "- Location tools: weather, currency converter, phrasebook;\n" +
+        "- \"Read to me\" option for longer texts;\n" +
+        "- Add place directly on map by long-tapping;\n" +
         "Data:\n" +
-        "- Now includes smaller pittoresque cities that invite discovery\n" +
-        "- Health, Safety & Money POIs for your practical needs\n" +
-        "- Travelpedia provides background articles";
-
-    String versionName = "1.7.2";
-    String versionCode = "131";
+        "- Health, Safety & Money POIs for your practical needs;\n" +
+        "- Travelpedia provides background articles;";
+    String versionName = "1.8.1";
+    String versionCode = "135";
     String sheetName = "22";
+
     String folderName = sheetName + "-" + versionName;
     File apksFolder = new File("apks/" + folderName);
 
