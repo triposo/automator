@@ -27,6 +27,7 @@ public class LaunchNewVersion extends MarketTask {
     logger.setLevel(Level.OFF);
 
     // To be changed when launching:
+    // This is the what's new message for standalone guides!
     String whatsnew = "1.8\n" +
         "- Bookmarks synchronization between devices and website, if you authenticate with your Facebook account;\n" +
         "- Closeby place as first suggestion, if any;\n" +
@@ -90,6 +91,7 @@ public class LaunchNewVersion extends MarketTask {
     System.out.println("Too big: " + tooBig);
     System.out.println("Never launched in Google Play: " + notYetLaunched);
     System.out.println("Failed: " + failed);
+    System.out.println("Please manually update the world guide.");
   }
 
   private Set<String> getAlreadyLaunchedGuides(String versionName) {
