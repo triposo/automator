@@ -50,7 +50,7 @@ public class LaunchNewVersion extends MarketTask {
     gotoHome();
 
     Set<String> alreadyLaunchedGuides = getAlreadyLaunchedGuides(versionName);
-    System.out.println("Already launched: " + alreadyLaunchedGuides);
+    System.out.println("Already updated: " + alreadyLaunchedGuides);
     Map guides = getGuides();
     List<String> tooBig = Lists.newArrayList();
     List<String> notYetLaunched = Lists.newArrayList();
@@ -88,7 +88,7 @@ public class LaunchNewVersion extends MarketTask {
 
     System.out.println("All done.");
     System.out.println("Too big: " + tooBig);
-    System.out.println("Not yet launched: " + notYetLaunched);
+    System.out.println("Never launched in Google Play: " + notYetLaunched);
     System.out.println("Failed: " + failed);
   }
 
