@@ -45,7 +45,10 @@ public class AppEditorPage extends Page {
     super(driver);
   }
 
-  public void clickApkFilesTab() {
+  public void clickApkFilesTab() throws AppMissingException {
+    if (!apkFilesTab.isDisplayed()) {
+      throw new AppMissingException();
+    }
     apkFilesTab.click();
   }
 
@@ -136,6 +139,21 @@ public class AppEditorPage extends Page {
     } catch (Exception e) {
       // Let's ignore this if it happens.
       e.printStackTrace();
+    }
+  }
+
+  public void waitForTabsLoaded() throws AppMissingException {
+    try {
+      wait("Product details").until(textIsOnPage());
+      wait("APK files").until(textIsOnPage());
+    } catch (UnhandledAlertException e) {
+      // This application is out of date. Click OK to refresh application data.
+      driver.switchTo().alert().dismiss();
+      // An unexpected error occurred. Please try again later.
+      driver.switchTo().alert().dismiss();
+      driver.switchTo().alert().dismiss();
+      driver.switchTo().alert().dismiss();
+      throw new AppMissingException();
     }
   }
 }

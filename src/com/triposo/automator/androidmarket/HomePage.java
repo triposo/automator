@@ -1,14 +1,18 @@
 package com.triposo.automator.androidmarket;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.triposo.automator.Page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,6 +64,36 @@ public class HomePage extends Page {
       }
 
       System.out.println(String.format("%s,%s,%s", name, totalInstalls, netInstalls));
+    }
+  }
+
+  public Set<String> getAlreadyLaunched(String versionName) {
+    Set<String> guides = Sets.newHashSet();
+    Pattern pattern = Pattern.compile("\\s" + versionName.replaceAll("\\.", "\\.") + "\\s");
+    List<WebElement> rows = appsTable.findElements(By.className("listingRow"));
+    for (WebElement row : rows) {
+      String text = row.getText();
+      if (!pattern.matcher(text).find()) {
+        continue;
+      }
+      WebElement link = row.findElement(By.id("gwt-debug-statsLink"));
+      if (link == null) {
+        continue;
+      }
+      String href = link.getAttribute("href");
+      String[] tmp = href.split("\\.");
+      String app = tmp[tmp.length - 1];
+      guides.add(app);
+    }
+    return guides;
+  }
+
+  public void waitForAppListLoaded() {
+    try {
+      wait("All Google Play Android app listings").until(textIsOnPage());
+      wait("Amsterdam").until(textIsOnPage());
+    } catch (UnhandledAlertException e) {
+      driver.switchTo().alert().dismiss();
     }
   }
 }
