@@ -37,7 +37,14 @@ public abstract class Task {
   }
 
   protected String getProperty(String name) {
-    return properties.getProperty(name);
+    if (System.getProperties().containsKey(name)) {
+      return System.getProperty(name);
+    } else if (properties.containsKey(name)) {
+      return properties.getProperty(name);
+    } else {
+      throw new IllegalStateException(
+          String.format("Need to specify property %s on command line or as a system property.", name));
+    }
   }
 
   public abstract void doRun() throws Exception;

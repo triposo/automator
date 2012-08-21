@@ -20,9 +20,8 @@ public class AddNewVersion extends Task {
   }
 
   public void doRun() throws Exception {
-    String version = "1.8.1";
-    String whatsnew =
-            "★ Fixes an issue which prevented bookmark syncing to work for some of our users.\n";
+    String version = getProperty("version");
+    String whatsnew = getProperty("whatsnew");
 
     Yaml yaml = new Yaml();
     Map guides = (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));

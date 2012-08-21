@@ -6,6 +6,11 @@
     <fileset dir="lib" includes="*.jar"/>
   </path>
 
+  <path id="run.path.id">
+    <path refid="lib.path.id"/>
+    <pathelement location="build/compiled"/>
+  </path>
+
   <target name="clean">
     <delete dir="build"/>
   </target>
@@ -16,6 +21,20 @@
       <src path="src"/>
       <classpath refid="lib.path.id"/>
     </javac>
+  </target>
+
+  <target name="run" depends="compile">
+      <java classname="${classname}" classpathref="run.path.id">
+        <syspropertyset builtin="all"/>
+      </java>
+  </target>
+
+  <target name="ios.addnewversion" depends="compile">
+      <java classname="com.triposo.automator.itunesconnect.AddNewVersion" classpathref="run.path.id">
+        <syspropertyset>
+          <propertyref builtin="all"/>
+        </syspropertyset>
+      </java>
   </target>
 
 </project>
