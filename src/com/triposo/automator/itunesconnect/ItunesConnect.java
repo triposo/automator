@@ -1,23 +1,19 @@
 package com.triposo.automator.itunesconnect;
 
-import com.triposo.automator.Page;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.FindBy;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.yaml.snakeyaml.Yaml;
 
-import static com.google.common.base.Predicates.not;
 import static org.junit.Assert.assertTrue;
 
 public class ItunesConnect {
@@ -167,7 +163,7 @@ public class ItunesConnect {
           versionDetailsPage.uploadIpadScreenshot(new File(directory, "ipad4.png"));
         }
 
-        versionDetailsPage.clickSave();
+        versionDetailsPage.clickSaveVersionDetails();
 
         touch(doneFile);
 

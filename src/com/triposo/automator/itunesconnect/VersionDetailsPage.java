@@ -16,10 +16,13 @@ import static com.google.common.base.Predicates.not;
 class VersionDetailsPage extends Page {
   @FindBy(css = ".metadataFieldReadonly input")
   WebElement version;
-  @FindBy(id = "lightboxSaveButtonEnabled") WebElement save;
+  @FindBy(id = "lightboxSaveButtonEnabled") WebElement saveVersionDetails;
 
   @FindBy(id = "fileInput_iPhoneandiPodtouchScreenshots") WebElement iphoneScreenshotUpload;
   @FindBy(css = "#iPhoneandiPodtouchScreenshots .lcUploadSpinner") WebElement iphoneUploadSpinner;
+
+  @FindBy(id = "fileInput_largeAppIcon") WebElement largeAppIconFile;
+  @FindBy(css = "#versionInfoLightbox .lcUploadSpinner") WebElement versionInfoUploadSpinner;
 
   @FindBy(id = "fileInput_iPadScreenshots") WebElement ipadScreenshotUpload;
   @FindBy(css = "#iPadScreenshots .lcUploadSpinner") WebElement ipadUploadSpinner;
@@ -91,16 +94,22 @@ class VersionDetailsPage extends Page {
     wait(iphoneUploadSpinner).until(not(isDisplayed()));
   }
 
+  public void uploadLargeIcon(File file) {
+    largeAppIconFile.sendKeys(file.getAbsolutePath());
+    wait(versionInfoUploadSpinner).until(isDisplayed());
+    wait(versionInfoUploadSpinner).until(not(isDisplayed()));
+  }
+
   public void changeVersionNumber(String version) {
     clickEditVersionDetails();
     wait(this.version).until(isDisplayed());
     this.version.clear();
     this.version.sendKeys(version);
-    clickSave();
+    clickSaveVersionDetails();
   }
 
-  public void clickSave() {
-    save.click();
+  public void clickSaveVersionDetails() {
+    saveVersionDetails.click();
   }
 
   public LegalIssuesPage clickReadyToUploadBinary() {
