@@ -37,4 +37,12 @@
       </java>
   </target>
 
+  <target name="ios.checkwaitingforupload" depends="compile">
+      <java classname="com.triposo.automator.itunesconnect.CheckWaitingForUpload" classpathref="run.path.id">
+        <syspropertyset>
+          <propertyref builtin="all"/>
+        </syspropertyset>
+      </java>
+  </target>
+
 </project>
