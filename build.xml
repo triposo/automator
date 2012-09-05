@@ -25,7 +25,9 @@
 
   <target name="run" depends="compile">
       <java classname="${classname}" classpathref="run.path.id">
-        <syspropertyset builtin="all"/>
+        <syspropertyset>
+          <propertyref builtin="all"/>
+        </syspropertyset>
       </java>
   </target>
 
