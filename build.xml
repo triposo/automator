@@ -47,4 +47,12 @@
       </java>
   </target>
 
+  <target name="ios.getappstatuses" depends="compile">
+      <java classname="com.triposo.automator.itunesconnect.GetAppStatuses" classpathref="run.path.id">
+        <syspropertyset>
+          <propertyref builtin="all"/>
+        </syspropertyset>
+      </java>
+  </target>
+
 </project>

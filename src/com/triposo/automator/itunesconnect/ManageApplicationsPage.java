@@ -9,6 +9,7 @@ class ManageApplicationsPage extends Page {
   @FindBy(css = ".search-param-value-appleId input")
   WebElement appleId;
   @FindBy(css = "input[value|=\"Search\"]") WebElement search;
+  @FindBy(css = ".seeAll a") WebElement seeAll;
 
   public ManageApplicationsPage(WebDriver driver) {
     super(driver);
@@ -18,6 +19,11 @@ class ManageApplicationsPage extends Page {
     this.appleId.clear();
     this.appleId.sendKeys(appleId.toString());
     search.click();
+    return new SearchResultPage(driver);
+  }
+
+  public SearchResultPage clickSeeAll() {
+    seeAll.click();
     return new SearchResultPage(driver);
   }
 }
