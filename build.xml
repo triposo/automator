@@ -5,6 +5,9 @@
   <property name="chromedriver.jar" value="lib/linux64/chromedriver_linux64_21.0.1180.4.zip"/>
   <property name="chromedriver.executable" value="chromedriver"/>
 
+  <!-- Empty means upload everything available. -->
+  <property name="droidguide.screenshot.guides" value=""/>
+
   <path id="lib.path.id">
     <fileset dir="lib" includes="*.jar"/>
   </path>
@@ -37,8 +40,19 @@
     </exec>
   </target>
 
-  <target name="launchDroidguide" depends="compile, chromedriver">
+  <target name="droidguide.launch" depends="compile, chromedriver">
     <java classname="com.triposo.automator.androidmarket.LaunchNewVersion">
+      <classpath>
+        <path refid="lib.path.id"/>
+        <pathelement location="build/compiled"/>
+      </classpath>
+      <sysproperty key="webdriver.chrome.driver" value="${chromedriver.temp.dir}/${chromedriver.executable}"/>
+    </java>
+  </target>
+
+  <target name="droidguide.updatescreenshots" depends="compile, chromedriver">
+    <java classname="com.triposo.automator.androidmarket.UpdateScreenshots">
+      <arg line="${droidguide.screenshot.guides}"/>
       <classpath>
         <path refid="lib.path.id"/>
         <pathelement location="build/compiled"/>
