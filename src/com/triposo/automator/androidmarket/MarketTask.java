@@ -9,6 +9,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -32,6 +33,11 @@ public abstract class MarketTask extends Task {
     AppEditorPage appEditorPage = new AppEditorPage(driver);
     appEditorPage.waitForTabsLoaded();
     return appEditorPage;
+  }
+
+  protected AppEditorPage gotoAppEditorForLocation(String location) throws AppMissingException {
+    String packageName = "com.triposo.droidguide." + location.toLowerCase(Locale.US);
+    return gotoAppEditor(packageName);
   }
 
   protected void gotoPage(String url) {

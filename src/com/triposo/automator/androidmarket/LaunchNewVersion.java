@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -14,6 +13,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class LaunchNewVersion extends MarketTask {
+
+  // To be changed when launching:
+  protected static final String RECENT_CHANGES = "1.8.6\n" +
+      "- Allow bookmarking tours and Travelpedia pages;\n" +
+      "- Added an app menu for accessing quickly the map or the travel log;\n" +
+      "- Bug fixes and optimizations;\n" +
+      "Data:\n" +
+      "- more images, better location coverage\n" +
+      "\n" +
+      "1.8\n" +
+      "- Bookmarks synchronization between devices and website, if you authenticate with your Facebook account;\n" +
+      "- Closeby place as first suggestion, if any;";
+  protected static final String VERSION_NAME = "1.8.6";
+  protected static final String VERSION_CODE = "138";
+  protected static final String SHEET_NAME = "23";
+
+  private static final File APKS_FOLDER = new File("apks/" + SHEET_NAME + "-" + VERSION_NAME);
 
   private static final int MAX_APK_SIZE_MB = 50;
 
@@ -26,39 +42,17 @@ public class LaunchNewVersion extends MarketTask {
     Logger logger = Logger.getLogger("");
     logger.setLevel(Level.OFF);
 
-    // To be changed when launching:
-    String whatsnew = "1.8\n" +
-        "- Bookmarks synchronization between devices and website, if you authenticate with your Facebook account;\n" +
-        "- Closeby place as first suggestion, if any;\n" +
-        "- Bug fixes and optimizations;\n" +
-        "\n" +
-        "1.7\n" +
-        "- Smart travel suggestions on the main screen;\n" +
-        "- Location tools: weather, currency converter, phrasebook;\n" +
-        "- \"Read to me\" option for longer texts;\n" +
-        "- Add place directly on map by long-tapping;\n" +
-        "Data:\n" +
-        "- Health, Safety & Money POIs for your practical needs;\n" +
-        "- Travelpedia provides background articles;";
-    String versionName = "1.8.1";
-    String versionCode = "135";
-    String sheetName = "22";
-
-    String folderName = sheetName + "-" + versionName;
-    File apksFolder = new File("apks/" + folderName);
-
     gotoHome();
-
-    Set<String> alreadyLaunchedGuides = getAlreadyLaunchedGuides(versionName);
-    System.out.println("Already launched: " + alreadyLaunchedGuides);
+    Set<String> upToDate = getUpToDateGuides();
+    System.out.println("Up to date apps: " + upToDate);
     Map guides = getGuides();
     List<String> tooBig = Lists.newArrayList();
     List<String> notYetLaunched = Lists.newArrayList();
     List<String> failed = Lists.newArrayList();
-    for (Iterator iterator = guides.entrySet().iterator(); iterator.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) iterator.next();
+    for (Object o : guides.entrySet()) {
+      Map.Entry entry = (Map.Entry) o;
       String location = (String) entry.getKey();
-      if (alreadyLaunchedGuides.contains(location.toLowerCase(Locale.US))) {
+      if (upToDate.contains(location.toLowerCase(Locale.US))) {
         System.out.println("Skipping because app already updated: " + location);
         continue;
       }
@@ -68,16 +62,15 @@ public class LaunchNewVersion extends MarketTask {
       Map guide = (Map) entry.getValue();
       if (Boolean.TRUE.equals(guide.get("apk"))) {
         System.out.println("Processing " + location);
-
         try {
-          launchNewVersion(location, guide, apksFolder, versionCode, whatsnew);
+          launchNewVersion(location, guide);
           System.out.println("Done " + location);
         } catch (ApkTooBigException e) {
           tooBig.add(location);
           System.out.println("Skipping because apk too big: " + e.getMessage());
         } catch (AppMissingException e) {
           notYetLaunched.add(location);
-          System.out.println("Skipping because app not yet launched: " + location);
+          System.out.println("Skipping because app not up to date: " + location);
         } catch (Exception e) {
           failed.add(location);
           e.printStackTrace();
@@ -88,15 +81,15 @@ public class LaunchNewVersion extends MarketTask {
 
     System.out.println("All done.");
     System.out.println("Too big: " + tooBig);
-    System.out.println("Not yet launched: " + notYetLaunched);
+    System.out.println("Not yet launched in Google Play: " + notYetLaunched);
     System.out.println("Failed: " + failed);
   }
 
-  private Set<String> getAlreadyLaunchedGuides(String versionName) {
+  protected Set<String> getUpToDateGuides() {
     Set<String> locations = Sets.newHashSet();
     HomePage homePage = gotoHome();
     while (true) {
-      locations.addAll(homePage.getAlreadyLaunched(versionName));
+      locations.addAll(homePage.getAlreadyLaunched(VERSION_NAME));
       if (!homePage.hasNext()) {
         break;
       }
@@ -105,12 +98,12 @@ public class LaunchNewVersion extends MarketTask {
     return locations;
   }
 
-  private void launchNewVersion(String location, Map guide, File versionRoot, String versionCode, String recentChanges) throws Exception {
+  private void launchNewVersion(String location, Map guide) throws Exception {
     String appName = (String) guide.get("app_name");
     if (appName == null) {
       appName = location;
     }
-    File apkFile = new File(versionRoot, appName + ".apk");
+    File apkFile = new File(APKS_FOLDER, appName + ".apk");
     if (!apkFile.isFile()) {
       throw new FileNotFoundException(apkFile.toString());
     }
@@ -118,13 +111,12 @@ public class LaunchNewVersion extends MarketTask {
       throw new ApkTooBigException(location + ", " + apkFile.length());
     }
 
-    String packageName = "com.triposo.droidguide." + location.toLowerCase();
-    AppEditorPage appEditorPage = gotoAppEditor(packageName);
+    AppEditorPage appEditorPage = gotoAppEditorForLocation(location);
     appEditorPage.clickApkFilesTab();
-    appEditorPage.uploadApk(versionCode, apkFile);
-    appEditorPage.clickActivate(versionCode);
+    appEditorPage.uploadApk(VERSION_CODE, apkFile);
+    appEditorPage.clickActivate(VERSION_CODE);
     appEditorPage.clickProductDetailsTab();
-    appEditorPage.enterRecentChanges(recentChanges);
+    appEditorPage.enterRecentChanges(RECENT_CHANGES);
     appEditorPage.theLegalBlahBlah();
     appEditorPage.enterPrivacyPolicyLink("http://www.triposo.com/tandc.html");
     appEditorPage.clickSave();
