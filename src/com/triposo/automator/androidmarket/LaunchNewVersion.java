@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 public class LaunchNewVersion extends MarketTask {
 
   // To be changed when launching:
+  // This is the what's new message for standalone guides!
   protected static final String RECENT_CHANGES = "1.8.6\n" +
       "- Allow bookmarking tours and Travelpedia pages;\n" +
       "- Added an app menu for accessing quickly the map or the travel log;\n" +
@@ -83,6 +84,7 @@ public class LaunchNewVersion extends MarketTask {
     System.out.println("Too big: " + tooBig);
     System.out.println("Not yet launched in Google Play: " + notYetLaunched);
     System.out.println("Failed: " + failed);
+    System.out.println("Please manually update the world guide!");
   }
 
   protected Set<String> getUpToDateGuides() {
