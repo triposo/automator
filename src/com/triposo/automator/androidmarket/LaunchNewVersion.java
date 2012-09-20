@@ -26,8 +26,8 @@ public class LaunchNewVersion extends MarketTask {
       "1.8\n" +
       "- Bookmarks synchronization between devices and website, if you authenticate with your Facebook account;\n" +
       "- Closeby place as first suggestion, if any;";
-  protected static final String VERSION_NAME = "1.8.6";
-  protected static final String VERSION_CODE = "138";
+  protected static final String VERSION_NAME = "1.8.7";
+  protected static final String VERSION_CODE = "139";
   protected static final String SHEET_NAME = "23";
 
   private static final File APKS_FOLDER = new File("apks/" + SHEET_NAME + "-" + VERSION_NAME);
