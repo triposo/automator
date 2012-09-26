@@ -69,6 +69,14 @@
       </java>
   </target>
 
+  <target name="ios.uploadscreenshots" depends="compile">
+    <java classname="com.triposo.automator.itunesconnect.UploadScreenshots" classpathref="run.path.id">
+      <syspropertyset>
+        <propertyref builtin="all"/>
+      </syspropertyset>
+    </java>
+  </target>
+
   <target name="chromedriver">
     <tempfile property="chromedriver.temp.dir" destDir="${java.io.tmpdir}" prefix="automator"/>
     <!-- Use command line unzip to keep file permissions -->

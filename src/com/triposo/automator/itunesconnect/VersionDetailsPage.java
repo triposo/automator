@@ -38,11 +38,11 @@ class VersionDetailsPage extends Page {
     elements.get(0).click();
   }
 
-  public void clickEditUploads() {
+  public void clickEditMetadataAndUploads() {
     // Make sure it's loaded.
     sleep(1000);
     final List<WebElement> elements = driver.findElements(By.cssSelector("img[alt=Edit]"));
-    elements.get(2).click();
+    elements.get(1).click();
     // Make sure lightbox is loaded.
     sleep(1000);
   }

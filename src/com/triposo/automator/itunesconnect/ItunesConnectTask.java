@@ -25,4 +25,13 @@ public abstract class ItunesConnectTask extends Task {
     SearchResultPage searchResultPage = manageApplicationsPage.searchByAppleId(appleId);
     return searchResultPage.clickFirstResult();
   }
+
+  protected class VersionMissingException extends Throwable {
+    public VersionMissingException(String s) {
+      super(s);
+    }
+  }
+
+  protected class MostRecentVersionRejectedException extends Throwable {
+  }
 }

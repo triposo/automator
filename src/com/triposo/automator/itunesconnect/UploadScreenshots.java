@@ -1,19 +1,20 @@
 package com.triposo.automator.itunesconnect;
 
-import com.triposo.automator.Task;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.yaml.snakeyaml.Yaml;
 
 public class UploadScreenshots extends ItunesConnectTask {
+
+  public static final String LAST_IPHONE_SCREENSHOT = "15-city-tours.png";
+  private static final String LAST_IPAD_SCREENSHOT = "TODO";
 
   private WebDriver driver;
 
@@ -41,10 +42,10 @@ public class UploadScreenshots extends ItunesConnectTask {
         Integer appleId = (Integer) ios.get("apple_id");
         if (appleId != null && appleId > 0) {
           System.out.println("Processing " + location);
-
+          boolean newVersion = "new".equals(getProperty("ios.screenshots.app.version.to.update"));
           try {
-            uploadScreenshots(location, ios, false);
-          } catch (Exception e) {
+            uploadScreenshots(location, ios, newVersion);
+          } catch (Throwable e) {
             e.printStackTrace();
             System.out.println("Error processing, skipping: " + location);
           }
@@ -57,75 +58,56 @@ public class UploadScreenshots extends ItunesConnectTask {
     System.out.println("All done.");
   }
 
-  private void uploadScreenshots(String location, Map ios, boolean newVersion) {
+  private void uploadScreenshots(String location, Map ios, boolean newVersion)
+      throws VersionMissingException, MostRecentVersionRejectedException {
     Integer appleId = (Integer) ios.get("apple_id");
     if (appleId != null && appleId > 0) {
-      String bundleId = (String) ios.get("bundle_id");
-      if (bundleId == null) {
-        bundleId = "com.triposo." + location.toLowerCase() + "guide";
+      File directoryIPhone = new File(getProperty("ios.screenshots.iphone.dir") + "/" + location);
+      File directoryIPad = new File(getProperty("ios.screenshots.ipad.dir") + "/" + location);
+      List<File> screenshotsIPhone = getGuideScreenshots(directoryIPhone);
+      List<File> screenshotsIPad = getGuideScreenshots(directoryIPad);
+      if (screenshotsIPhone.isEmpty() && screenshotsIPad.isEmpty()) {
+        // Nothing to upload.
+        return;
       }
-      File directory = new File("/Users/tirsen/triposo/Dropbox/ios screenshots/" + bundleId);
-      if (directory.exists()) {
+      VersionDetailsPage versionDetailsPage = getVersionDetailsPage(appleId, newVersion);
+      versionDetailsPage.clickEditMetadataAndUploads();
 
-        File doneFile = new File(directory, "DONE");
-        if (doneFile.exists()) {
-          System.out.println("Already done, skipping: " + appleId);
-          System.out.println("(Delete " + doneFile.getAbsolutePath() + " if incorrect.)");
-          return;
+      if (screenshotsContain(screenshotsIPhone, LAST_IPHONE_SCREENSHOT)) {
+        versionDetailsPage.deleteAllIphoneScreenshots();
+        for (File screenshot : screenshotsIPhone) {
+          versionDetailsPage.uploadIphoneScreenshot(screenshot);
         }
-        AppSummaryPage appSummaryPage = gotoAppSummary(appleId);
-        if (appSummaryPage.containsText("The most recent version of your app has been rejected")) {
-          System.out.println("Last version rejected, skipping: " + appleId);
-          return;
-        }
-        VersionDetailsPage versionDetailsPage;
-        if (newVersion) {
-          if (!appSummaryPage.containsText("New Version")) {
-            System.out.println("Doesn't have a new version, skipping: " + appleId);
-            return;
-          }
-          versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
-        } else {
-          if (!appSummaryPage.containsText("Current Version")) {
-            System.out.println("Doesn't have a current version, skipping: " + appleId);
-            return;
-          }
-          versionDetailsPage = appSummaryPage.clickCurrentVersionViewDetails();
-        }
-
-        versionDetailsPage.clickEditUploads();
-
-        if (new File(directory, "iphone4.png").exists()
-            ) {
-          versionDetailsPage.deleteAllIphoneScreenshots();
-          versionDetailsPage.uploadIphoneScreenshot(new File(directory, "iphone1.png"));
-          versionDetailsPage.uploadIphoneScreenshot(new File(directory, "iphone2.png"));
-          versionDetailsPage.uploadIphoneScreenshot(new File(directory, "iphone3.png"));
-          versionDetailsPage.uploadIphoneScreenshot(new File(directory, "iphone4.png"));
-        }
-
-        if (new File(directory, "ipad4.png").exists()) {
-          versionDetailsPage.deleteAllIpadScreenshots();
-          versionDetailsPage.uploadIpadScreenshot(new File(directory, "ipad1.png"));
-          versionDetailsPage.uploadIpadScreenshot(new File(directory, "ipad2.png"));
-          versionDetailsPage.uploadIpadScreenshot(new File(directory, "ipad3.png"));
-          versionDetailsPage.uploadIpadScreenshot(new File(directory, "ipad4.png"));
-        }
-
-        versionDetailsPage.clickSaveVersionDetails();
-
-        touch(doneFile);
-
+        markGuideScreenshotsUploaded(directoryIPhone);
       }
+      if (screenshotsContain(screenshotsIPad, LAST_IPAD_SCREENSHOT)) {
+        versionDetailsPage.deleteAllIpadScreenshots();
+        for (File screenshot : screenshotsIPad) {
+          versionDetailsPage.uploadIpadScreenshot(screenshot);
+        }
+        markGuideScreenshotsUploaded(directoryIPad);
+      }
+
+      versionDetailsPage.clickSaveVersionDetails();
     }
   }
 
-  private void touch(File doneFile) {
-    try {
-      FileOutputStream out = new FileOutputStream(doneFile);
-      out.close();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+  private VersionDetailsPage getVersionDetailsPage(Integer appleId, boolean newVersion)
+      throws VersionMissingException, MostRecentVersionRejectedException {
+    AppSummaryPage appSummaryPage = gotoAppSummary(appleId);
+    if (appSummaryPage.containsText("The most recent version of your app has been rejected")) {
+      throw new MostRecentVersionRejectedException();
+    }
+    if (newVersion) {
+      if (!appSummaryPage.containsText("New Version")) {
+        throw new VersionMissingException("Doesn't have a new version: " + appleId);
+      }
+      return appSummaryPage.clickNewVersionViewDetails();
+    } else {
+      if (!appSummaryPage.containsText("Current Version")) {
+        throw new VersionMissingException("Doesn't have a current version: " + appleId);
+      }
+      return appSummaryPage.clickCurrentVersionViewDetails();
     }
   }
 }

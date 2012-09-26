@@ -63,15 +63,9 @@ public class UpdateScreenshots extends LaunchNewVersion {
     }
   }
 
-  private List<File> getGuideScreenshots(File dir) {
-    List<File> images = Lists.newArrayList(dir.listFiles());
-    Collections.sort(images);
-    return images;
-  }
-
   private Map<String, File> getGuidesWithScreenshots() {
     Map<String, File> screenshots = Maps.newHashMap();
-    for (File guideImagesDir : new File("droidguide-screenshots").listFiles()) {
+    for (File guideImagesDir : new File(getProperty("android.screenshots.dir")).listFiles()) {
       if (!guideImagesDir.isDirectory()) {
         continue;
       }
