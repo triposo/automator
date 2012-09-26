@@ -1,0 +1,9 @@
+<ivy-module version="2.0">
+  <info organisation="com.triposo.droidguide" module="dev"/>
+  <configurations>
+    <conf name="compiling"/>
+  </configurations>
+  <dependencies>
+    <dependency org="org.seleniumhq.selenium" name="selenium-server" rev="2.25.0" conf="compiling->default"/>
+  </dependencies>
+</ivy-module>

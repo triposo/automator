@@ -1,10 +1,12 @@
 package com.triposo.automator.androidmarket;
 
+import com.google.common.base.Predicate;
 import com.triposo.automator.Page;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Predicates.not;
@@ -40,12 +42,21 @@ public class AppEditorPage extends Page {
   WebElement unpublishButton;
   @FindBy(id = "gwt-debug-multiple_apk-publish_button")
   WebElement publishButton;
+  @FindBy(id = "gwt-debug-app_editor-screen_shot-add_another_link")
+  WebElement screenshotAddAnotherLink;
+  @FindBy(id = "gwt-debug-app_editor-screen_shot-upload_form-upload_box")
+  WebElement screenshotData;
+  @FindBy(id = "gwt-debug-app_editor-screen_shot-upload_form-upload_button")
+  WebElement screenshotsSaveButton;
 
   public AppEditorPage(WebDriver driver) {
     super(driver);
   }
 
-  public void clickApkFilesTab() {
+  public void clickApkFilesTab() throws AppMissingException {
+    if (!apkFilesTab.isDisplayed()) {
+      throw new AppMissingException();
+    }
     apkFilesTab.click();
   }
 
@@ -136,6 +147,89 @@ public class AppEditorPage extends Page {
     } catch (Exception e) {
       // Let's ignore this if it happens.
       e.printStackTrace();
+    }
+  }
+
+  public void waitForTabsLoaded() throws AppMissingException {
+    try {
+      wait("Product details").until(textIsOnPage());
+      wait("APK files").until(textIsOnPage());
+    } catch (UnhandledAlertException e) {
+      // This application is out of date. Click OK to refresh application data.
+      driver.switchTo().alert().dismiss();
+      // An unexpected error occurred. Please try again later.
+      driver.switchTo().alert().dismiss();
+      driver.switchTo().alert().dismiss();
+      driver.switchTo().alert().dismiss();
+      throw new AppMissingException();
+    }
+  }
+
+  public void deleteScreenshots() {
+    // The screenshots row should be the first one.
+    WebElement screenshotsDiv = driver.findElement(By.className("editAppRow"));
+    try {
+      while (true) {
+        WebElement deleteScreenshotLink = getDeleteLinkFrom(screenshotsDiv);
+        deleteScreenshotLink.click();
+        wait(screenshotsDiv).withTimeout(10, TimeUnit.SECONDS).until(containsDeleteLink());
+      }
+    } catch (NoSuchElementException e) {
+    } catch (TimeoutException e) {
+    }
+  }
+
+  private WebElement getDeleteLinkFrom(WebElement element) {
+    return element.findElement(By.id("gwt-debug-image_widget_0-remove_link"));
+  }
+
+  private Predicate<WebElement> containsDeleteLink() {
+    return new Predicate<WebElement>() {
+      @Override
+      public boolean apply(WebElement webElement) {
+        try {
+          return getDeleteLinkFrom(webElement).isDisplayed();
+        } catch (NoSuchElementException e) {
+          return false;
+        } catch (StaleElementReferenceException e) {
+          // Why are we getting this?
+          return false;
+        }
+      }
+    };
+  }
+
+  public void uploadScreenshots(List<File> images) {
+    for (File image : images) {
+      if (!isAddScreenshotFormDisplayed()) {
+        // Either no screenshot has been added yet, or all eight have been added,
+        // in which case we are in trouble.
+        wait(screenshotAddAnotherLink).withTimeout(10, TimeUnit.SECONDS).until(isDisplayed());
+        screenshotAddAnotherLink.click();
+        wait(screenshotData).withTimeout(30, TimeUnit.SECONDS).until(isDisplayed());
+      }
+      // Upload one image.
+      while (true) {
+        try {
+          screenshotData.sendKeys(image.getAbsolutePath());
+          screenshotsSaveButton.click();
+          break;
+        } catch (WebDriverException e) {
+          if (e.toString().contains("Element is not clickable at point")) {
+            // Try once more.
+            continue;
+          }
+          throw e;
+        }
+      }
+    }
+  }
+
+  private boolean isAddScreenshotFormDisplayed() {
+    try {
+      return screenshotData.isDisplayed();
+    } catch (NoSuchElementException e) {
+      return false;
     }
   }
 }

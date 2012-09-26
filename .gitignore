@@ -1,4 +1,9 @@
 *.log
 local.properties
 .DS_Store
-build
+/C:\\nppdf32Log\\debuglog.txt
+/apks
+/build
+/droidguide-screenshots
+/lib/*.jar
+/out

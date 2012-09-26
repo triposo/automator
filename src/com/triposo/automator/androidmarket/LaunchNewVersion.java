@@ -1,131 +1,133 @@
 package com.triposo.automator.androidmarket;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.yaml.snakeyaml.Yaml;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Iterator;
+import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class LaunchNewVersion {
+public class LaunchNewVersion extends MarketTask {
 
-  private WebDriver driver;
-  private final Properties properties = new Properties();
+  // To be changed when launching:
+  // This is the what's new message for standalone guides!
+  protected static final String RECENT_CHANGES = "1.8.6\n" +
+      "- Allow bookmarking tours and Travelpedia pages;\n" +
+      "- Added an app menu for accessing quickly the map or the travel log;\n" +
+      "- Bug fixes and optimizations;\n" +
+      "Data:\n" +
+      "- more images, better location coverage\n" +
+      "\n" +
+      "1.8\n" +
+      "- Bookmarks synchronization between devices and website, if you authenticate with your Facebook account;\n" +
+      "- Closeby place as first suggestion, if any;";
+  protected static final String VERSION_NAME = "1.8.7";
+  protected static final String VERSION_CODE = "139";
+  protected static final String SHEET_NAME = "23";
+
+  private static final File APKS_FOLDER = new File("apks/" + SHEET_NAME + "-" + VERSION_NAME);
+
+  private static final int MAX_APK_SIZE_MB = 50;
 
   public static void main(String[] args) throws Exception {
-    try {
-      new LaunchNewVersion().run();
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      System.exit(0);
-    }
+    new LaunchNewVersion().run();
   }
 
-  public void run() throws Exception {
-    properties.load(new FileInputStream("local.properties"));
-
+  @Override
+  public void doRun() throws Exception {
     Logger logger = Logger.getLogger("");
     logger.setLevel(Level.OFF);
-    driver = new FirefoxDriver();
-    driver.manage().window().setSize(new Dimension(1200, 1000));
-    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-    String whatsnew = "Refreshed map includes a compass and indicates precision of the GPS reading\n" +
-        "Country suggestions (for country guides) including descriptions of local dishes & recommendations what to eat\n" +
-        "Bug fixes & UI improvements\n" +
-        "Redesigned home screen & improved guide search\n" +
-        "Quickly see nearby locations (in a country guide)\n" +
-        "Add places you discover when you are near them\n" +
-        "New suggestions engine";
-
-    String versionName = "1.6.8";
-    String versionCode = "128";
-    String sheetName = "19";
-    String folderName = sheetName + "-" + versionName;
-    File apksFolder = new File("../../Dropbox/apks/" + folderName);
-
-    driver.get(rootUrl());
-    SigninPage signinPage = new SigninPage(driver);
-    signinPage.signin(properties.getProperty("android.username"), properties.getProperty("android.password"));
-    signinPage.waitForAppListLoaded();
-
-    Yaml yaml = new Yaml();
-    Map guides = (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
-    for (Iterator iterator = guides.entrySet().iterator(); iterator.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) iterator.next();
+    gotoHome();
+    Set<String> upToDate = getUpToDateGuides();
+    System.out.println("Up to date apps: " + upToDate);
+    Map guides = getGuides();
+    List<String> tooBig = Lists.newArrayList();
+    List<String> notYetLaunched = Lists.newArrayList();
+    List<String> failed = Lists.newArrayList();
+    for (Object o : guides.entrySet()) {
+      Map.Entry entry = (Map.Entry) o;
       String location = (String) entry.getKey();
+      if (upToDate.contains(location.toLowerCase(Locale.US))) {
+        System.out.println("Skipping because app already updated: " + location);
+        continue;
+      }
       if (location.equals("world")) {
         continue;
       }
       Map guide = (Map) entry.getValue();
       if (Boolean.TRUE.equals(guide.get("apk"))) {
         System.out.println("Processing " + location);
-
         try {
-          launchNewVersion(location, guide, apksFolder, versionCode, whatsnew);
+          launchNewVersion(location, guide);
+          System.out.println("Done " + location);
+        } catch (ApkTooBigException e) {
+          tooBig.add(location);
+          System.out.println("Skipping because apk too big: " + e.getMessage());
+        } catch (AppMissingException e) {
+          notYetLaunched.add(location);
+          System.out.println("Skipping because app not up to date: " + location);
         } catch (Exception e) {
+          failed.add(location);
           e.printStackTrace();
-          System.out.println("Error processing, skipping: " + location);
+          System.out.println("Skipping because operation failed: " + location);
         }
-
-        System.out.println("Done " + location);
       }
     }
 
     System.out.println("All done.");
+    System.out.println("Too big: " + tooBig);
+    System.out.println("Not yet launched in Google Play: " + notYetLaunched);
+    System.out.println("Failed: " + failed);
+    System.out.println("Please manually update the world guide!");
   }
 
-  private String rootUrl() {
-    return "https://play.google.com/apps/publish/Home?dev_acc=" + getDevAccountId();
+  protected Set<String> getUpToDateGuides() {
+    Set<String> locations = Sets.newHashSet();
+    HomePage homePage = gotoHome();
+    while (true) {
+      locations.addAll(homePage.getAlreadyLaunched(VERSION_NAME));
+      if (!homePage.hasNext()) {
+        break;
+      }
+      homePage = homePage.clickNext();
+    }
+    return locations;
   }
 
-  private void launchNewVersion(String location, Map guide, File versionRoot, String versionCode, String recentChanges) {
+  private void launchNewVersion(String location, Map guide) throws Exception {
     String appName = (String) guide.get("app_name");
     if (appName == null) {
       appName = location;
     }
-    File apkFile = new File(versionRoot, appName + ".apk");
+    File apkFile = new File(APKS_FOLDER, appName + ".apk");
     if (!apkFile.isFile()) {
-      System.out.println("Could not find apk for " + location + ". Skipping.");
-      return;
+      throw new FileNotFoundException(apkFile.toString());
+    }
+    if (apkFile.length() > MAX_APK_SIZE_MB * 1024 * 1024) {
+      throw new ApkTooBigException(location + ", " + apkFile.length());
     }
 
-    String packageName = "com.triposo.droidguide." + location.toLowerCase();
-    AppEditorPage appEditorPage = gotoAppEditor(packageName);
+    AppEditorPage appEditorPage = gotoAppEditorForLocation(location);
     appEditorPage.clickApkFilesTab();
-    appEditorPage.uploadApk(versionCode, apkFile);
-    appEditorPage.clickActivate(versionCode);
+    appEditorPage.uploadApk(VERSION_CODE, apkFile);
+    appEditorPage.clickActivate(VERSION_CODE);
     appEditorPage.clickProductDetailsTab();
-    appEditorPage.enterRecentChanges(recentChanges);
+    appEditorPage.enterRecentChanges(RECENT_CHANGES);
     appEditorPage.theLegalBlahBlah();
     appEditorPage.enterPrivacyPolicyLink("http://www.triposo.com/tandc.html");
     appEditorPage.clickSave();
     appEditorPage.clickPublishIfNecessary();
   }
 
-  private AppEditorPage gotoAppEditor(String packageName) {
-    driver.get(rootUrl() + "#AppEditorPlace:p=" + packageName);
-    if (driver.findElement(By.cssSelector("body")).getText().contains("Password")) {
-      SigninPage signinPage = new SigninPage(driver);
-      signinPage.signin(properties.getProperty("android.username"), properties.getProperty("android.password"));
-      driver.get("https://market.android.com/publish/Home#AppEditorPlace:p=" + packageName);
+  private class ApkTooBigException extends Exception {
+    public ApkTooBigException(String s) {
+      super(s);
     }
-    return new AppEditorPage(driver);
-  }
-
-  private String getDevAccountId() {
-    return "06870337150021354184";
   }
 }
