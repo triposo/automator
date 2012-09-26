@@ -30,7 +30,7 @@ public class LaunchNewVersion extends MarketTask {
   protected static final String VERSION_CODE = "139";
   protected static final String SHEET_NAME = "23";
 
-  private static final File APKS_FOLDER = new File("apks/" + SHEET_NAME + "-" + VERSION_NAME);
+  private static final String APKS_FOLDER = SHEET_NAME + "-" + VERSION_NAME;
 
   private static final int MAX_APK_SIZE_MB = 50;
 
@@ -105,7 +105,8 @@ public class LaunchNewVersion extends MarketTask {
     if (appName == null) {
       appName = location;
     }
-    File apkFile = new File(APKS_FOLDER, appName + ".apk");
+    File apksDir = new File(getProperty("android.apks.dir"), APKS_FOLDER);
+    File apkFile = new File(apksDir, appName + ".apk");
     if (!apkFile.isFile()) {
       throw new FileNotFoundException(apkFile.toString());
     }
