@@ -1,6 +1,5 @@
 package com.triposo.automator.itunesconnect;
 
-import com.google.common.base.Preconditions;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
@@ -8,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -37,13 +35,6 @@ public class ItunesConnect {
     username = properties.getProperty("itunes.username");
     password = properties.getProperty("itunes.password");
 
-    String version = "1.4.1";
-    String whatsnew =
-        "- new design \n" +
-            "- dynamic suggestions \n" +
-            "- checkins \n" +
-            "- facebook integration";
-
 //    driver = new RemoteWebDriver(new URL("http://localhost:9515"), DesiredCapabilities.chrome());
 //    driver = new HtmlUnitDriver();
     driver = new FirefoxDriver();
@@ -52,8 +43,8 @@ public class ItunesConnect {
 
     Yaml yaml = new Yaml();
     Map guides = (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
-    for (Iterator iterator = guides.entrySet().iterator(); iterator.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) iterator.next();
+    for (Object o : guides.entrySet()) {
+      Map.Entry entry = (Map.Entry) o;
       String location = (String) entry.getKey();
       if (!location.equals("Italy")) {
         continue;
@@ -62,7 +53,7 @@ public class ItunesConnect {
       Map ios = (Map) guide.get("ios");
       if (ios != null) {
         Integer appleId = (Integer) ios.get("apple_id");
-        if (appleId != null && appleId.intValue() > 0) {
+        if (appleId != null && appleId > 0) {
           System.out.println("Processing " + location);
 
           try {
@@ -80,35 +71,9 @@ public class ItunesConnect {
     System.out.println("All done.");
   }
 
-  private void addNewVersion(Integer appleId, String version, String whatsnew) {
-    ManageApplicationsPage manageApplicationsPage = gotoItunesConnect().gotoManageApplications();
-    SearchResultPage searchResultPage = manageApplicationsPage.searchByAppleId(appleId);
-    AppSummaryPage appSummaryPage = searchResultPage.clickFirstResult();
-    if (appSummaryPage.containsText("The most recent version of your app has been rejected")) {
-      System.out.println("Last version rejected, skipping: " + appleId);
-      return;
-    }
-    if (!appSummaryPage.containsText(version)) {
-      NewVersionPage newVersionPage = appSummaryPage.clickAddVersion();
-      newVersionPage.setVersionNumber(version);
-      newVersionPage.setWhatsnew(whatsnew);
-      newVersionPage.clickSave();
-    }
-    Preconditions.checkArgument(appSummaryPage.containsText(version), "New version was not added for some reason.");
-    if (appSummaryPage.containsText("Prepare for Upload")) {
-      VersionDetailsPage versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
-      LegalIssuesPage legalIssuesPage = versionDetailsPage.clickReadyToUploadBinary();
-      legalIssuesPage.theUsualBlahBlah();
-      AutoReleasePage autoReleasePage = legalIssuesPage.clickSave();
-      autoReleasePage.setAutoReleaseYes();
-      autoReleasePage.clickSave();
-      autoReleasePage.clickContinue();
-    }
-  }
-
   private void uploadScreenshots(String location, Map ios, boolean newVersion) {
     Integer appleId = (Integer) ios.get("apple_id");
-    if (appleId != null && appleId.intValue() > 0) {
+    if (appleId != null && appleId > 0) {
       String bundleId = (String) ios.get("bundle_id");
       if (bundleId == null) {
         bundleId = "com.triposo." + location.toLowerCase() + "guide";
@@ -146,7 +111,8 @@ public class ItunesConnect {
 
         versionDetailsPage.clickEditUploads();
 
-        if (new File(directory, "iphone4.png").exists()) {
+        if (new File(directory, "iphone4.png").exists()
+            ) {
           versionDetailsPage.deleteAllIphoneScreenshots();
           versionDetailsPage.uploadIphoneScreenshot(new File(directory, "iphone1.png"));
           versionDetailsPage.uploadIphoneScreenshot(new File(directory, "iphone2.png"));
@@ -177,26 +143,6 @@ public class ItunesConnect {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private void setVersion(Integer appleId, String version) {
-    ManageApplicationsPage manageApplicationsPage = gotoItunesConnect().gotoManageApplications();
-    SearchResultPage searchResultPage = manageApplicationsPage.searchByAppleId(appleId);
-    AppSummaryPage appSummaryPage = searchResultPage.clickFirstResult();
-    if (appSummaryPage.containsText("The most recent version of your app has been rejected")) {
-      System.out.println("Last version rejected, skipping: " + appleId);
-      return;
-    }
-    if (!appSummaryPage.containsText("New Version")) {
-      System.out.println("Doesn't have a new version, skipping: " + appleId);
-      return;
-    }
-    VersionDetailsPage versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
-    if (versionDetailsPage.containsText(version)) {
-      System.out.println("Already set to new version, skipping: " + appleId);
-      return;
-    }
-    versionDetailsPage.changeVersionNumber(version);
   }
 
   private MainPage gotoItunesConnect() {

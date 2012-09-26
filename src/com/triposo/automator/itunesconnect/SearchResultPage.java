@@ -1,6 +1,5 @@
 package com.triposo.automator.itunesconnect;
 
-import com.google.common.base.Splitter;
 import com.triposo.automator.Page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -10,8 +9,6 @@ import org.openqa.selenium.support.FindBy;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 class SearchResultPage extends Page {
   @FindBy(css = ".resultList TABLE")

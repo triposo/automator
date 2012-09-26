@@ -4,12 +4,6 @@ import com.triposo.automator.Task;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.Iterator;
-import java.util.Map;
 
 public class CheckWaitingForUpload extends Task {
 
