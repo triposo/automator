@@ -1,5 +1,6 @@
 package com.triposo.automator.itunesconnect;
 
+import com.triposo.automator.Task;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
@@ -8,35 +9,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.yaml.snakeyaml.Yaml;
 
-public class ItunesConnect {
+public class UploadScreenshots extends ItunesConnectTask {
 
   private WebDriver driver;
-  private String username;
-  private String password;
 
   public static void main(String[] args) throws Exception {
-    try {
-      new ItunesConnect().run();
-    } catch(Exception e) {
-      e.printStackTrace();
-    } finally {
-      System.exit(0);
-    }
+    new UploadScreenshots().run();
   }
 
-  public void run() throws Exception {
-    Properties properties = new Properties();
-    properties.load(new FileInputStream("local.properties"));
-    username = properties.getProperty("itunes.username");
-    password = properties.getProperty("itunes.password");
-
-//    driver = new RemoteWebDriver(new URL("http://localhost:9515"), DesiredCapabilities.chrome());
-//    driver = new HtmlUnitDriver();
+  @Override
+  public void doRun() throws Exception {
     driver = new FirefoxDriver();
     driver.manage().window().setSize(new Dimension(1200, 1000));
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -87,9 +73,7 @@ public class ItunesConnect {
           System.out.println("(Delete " + doneFile.getAbsolutePath() + " if incorrect.)");
           return;
         }
-        ManageApplicationsPage manageApplicationsPage = gotoItunesConnect().gotoManageApplications();
-        SearchResultPage searchResultPage = manageApplicationsPage.searchByAppleId(appleId);
-        AppSummaryPage appSummaryPage = searchResultPage.clickFirstResult();
+        AppSummaryPage appSummaryPage = gotoAppSummary(appleId);
         if (appSummaryPage.containsText("The most recent version of your app has been rejected")) {
           System.out.println("Last version rejected, skipping: " + appleId);
           return;
@@ -142,16 +126,6 @@ public class ItunesConnect {
       out.close();
     } catch (IOException e) {
       throw new RuntimeException(e);
-    }
-  }
-
-  private MainPage gotoItunesConnect() {
-    driver.get("https://itunesconnect.apple.com");
-    if (driver.findElement(By.cssSelector("body")).getText().contains("Password")) {
-      SigninPage signinPage = new SigninPage(driver);
-      return signinPage.signin(username, password);
-    } else {
-      return new MainPage(driver);
     }
   }
 }
