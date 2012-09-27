@@ -15,21 +15,18 @@ public class ChangeVersion extends ItunesConnectTask {
       Map.Entry guideEntry = (Map.Entry) entry;
       String location = (String) guideEntry.getKey();
       Map guide = (Map) guideEntry.getValue();
-      Map ios = (Map) guide.get("ios");
-      if (ios != null) {
-        Integer appleId = (Integer) ios.get("apple_id");
-        if (appleId != null && appleId > 0) {
-          System.out.println("Processing " + location);
+      Integer appleId = getAppleIdOfGuide(guide);
+      if (appleId != null && appleId > 0) {
+        System.out.println("Processing " + location);
 
-          try {
-            changeVersion(appleId, version);
-          } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error processing, skipping: " + location);
-          }
-
-          System.out.println("Done " + location);
+        try {
+          changeVersion(appleId, version);
+        } catch (Exception e) {
+          e.printStackTrace();
+          System.out.println("Error processing, skipping: " + location);
         }
+
+        System.out.println("Done " + location);
       }
     }
 

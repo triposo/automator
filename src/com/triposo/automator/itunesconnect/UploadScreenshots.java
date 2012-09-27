@@ -32,30 +32,26 @@ public class UploadScreenshots extends ItunesConnectTask {
       if (!location.equals("Italy")) {
         continue;
       }
-      Map ios = (Map) guide.get("ios");
-      if (ios != null) {
-        Integer appleId = (Integer) ios.get("apple_id");
-        if (appleId != null && appleId > 0) {
-          System.out.println("Processing " + location);
-          boolean newVersion = "new".equals(getProperty("ios.screenshots.app.version.to.update"));
-          try {
-            uploadScreenshots(location, ios, newVersion);
-          } catch (Throwable e) {
-            e.printStackTrace();
-            System.out.println("Error processing, skipping: " + location);
-          }
-
-          System.out.println("Done " + location);
+      Integer appleId = getAppleIdOfGuide(guide);
+      if (appleId != null && appleId > 0) {
+        System.out.println("Processing " + location);
+        boolean newVersion = "new".equals(getProperty("ios.screenshots.app.version.to.update"));
+        try {
+          uploadScreenshots(location, appleId, newVersion);
+        } catch (Throwable e) {
+          e.printStackTrace();
+          System.out.println("Error processing, skipping: " + location);
         }
+
+        System.out.println("Done " + location);
       }
     }
 
     System.out.println("All done.");
   }
 
-  private void uploadScreenshots(String location, Map ios, boolean newVersion)
+  private void uploadScreenshots(String location, Integer appleId, boolean newVersion)
       throws VersionMissingException, MostRecentVersionRejectedException {
-    Integer appleId = (Integer) ios.get("apple_id");
     if (appleId != null && appleId > 0) {
       File directoryIPhone = new File(getProperty("ios.screenshots.iphone.dir") + "/" + location);
       File directoryIPad = new File(getProperty("ios.screenshots.ipad.dir") + "/" + location);

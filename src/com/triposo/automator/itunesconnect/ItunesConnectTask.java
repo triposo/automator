@@ -5,7 +5,31 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
+import java.io.FileNotFoundException;
+import java.util.Iterator;
+import java.util.Map;
+
 public abstract class ItunesConnectTask extends Task {
+  @Override
+  protected Map getGuides() throws FileNotFoundException {
+    Map guides = super.getGuides();
+    Iterator guidesIterator = guides.entrySet().iterator();
+    while (guidesIterator.hasNext()) {
+      Map.Entry guideEntry = (Map.Entry) guidesIterator.next();
+      Map guide = (Map) guideEntry.getValue();
+      Map ios = (Map) guide.get("ios");
+      if (ios == null) {
+        guidesIterator.remove();
+      }
+    }
+    return guides;
+  }
+
+  protected Integer getAppleIdOfGuide(Map guide) {
+    Map ios = (Map) guide.get("ios");
+    return (Integer) ios.get("apple_id");
+  }
+
   protected MainPage gotoItunesConnect() {
     driver.get("https://itunesconnect.apple.com");
     if (driver.findElement(By.cssSelector("body")).getText().contains("Password")) {
