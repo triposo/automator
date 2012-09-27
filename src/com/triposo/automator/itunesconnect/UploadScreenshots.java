@@ -4,12 +4,9 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import org.yaml.snakeyaml.Yaml;
 
 public class UploadScreenshots extends ItunesConnectTask {
 
@@ -28,15 +25,13 @@ public class UploadScreenshots extends ItunesConnectTask {
     driver.manage().window().setSize(new Dimension(1200, 1000));
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-    Yaml yaml = new Yaml();
-    Map guides = (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
-    for (Object o : guides.entrySet()) {
-      Map.Entry entry = (Map.Entry) o;
-      String location = (String) entry.getKey();
+    for (Object entry : getGuides().entrySet()) {
+      Map.Entry guideEntry = (Map.Entry) entry;
+      String location = (String) guideEntry.getKey();
+      Map guide = (Map) guideEntry.getValue();
       if (!location.equals("Italy")) {
         continue;
       }
-      Map guide = (Map) entry.getValue();
       Map ios = (Map) guide.get("ios");
       if (ios != null) {
         Integer appleId = (Integer) ios.get("apple_id");

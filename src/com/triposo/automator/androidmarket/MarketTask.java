@@ -58,9 +58,4 @@ public abstract class MarketTask extends Task {
   private String getDevAccountId() {
     return "06870337150021354184";
   }
-
-  protected Map getGuides() throws FileNotFoundException {
-    Yaml yaml = new Yaml();
-    return (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
-  }
 }

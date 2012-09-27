@@ -6,13 +6,16 @@ import com.google.common.collect.Lists;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -47,6 +50,11 @@ public abstract class Task {
       throw new IllegalStateException(
           String.format("Need to specify property %s on command line or as a system property.", name));
     }
+  }
+
+  protected Map getGuides() throws FileNotFoundException {
+    Yaml yaml = new Yaml();
+    return (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
   }
 
   protected List<File> getGuideScreenshots(File dir) {
