@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class UploadScreenshots extends ItunesConnectTask {
 
-  public static final String LAST_IPHONE_SCREENSHOT = "15-city-tours.png";
+  public static final String LAST_IPHONE_SCREENSHOT = "14-city-poi.png";
   private static final String LAST_IPAD_SCREENSHOT = "TODO";
 
   private WebDriver driver;
@@ -29,9 +29,6 @@ public class UploadScreenshots extends ItunesConnectTask {
       Map.Entry guideEntry = (Map.Entry) entry;
       String location = (String) guideEntry.getKey();
       Map guide = (Map) guideEntry.getValue();
-      if (!location.equals("Italy")) {
-        continue;
-      }
       Integer appleId = getAppleIdOfGuide(guide);
       if (appleId != null && appleId > 0) {
         System.out.println("Processing " + location);
@@ -70,6 +67,8 @@ public class UploadScreenshots extends ItunesConnectTask {
           versionDetailsPage.uploadIphoneScreenshot(screenshot);
         }
         markGuideScreenshotsUploaded(directoryIPhone);
+      } else {
+        System.out.println("Skipping iphone because incomplete: " + directoryIPhone);
       }
       if (screenshotsContain(screenshotsIPad, LAST_IPAD_SCREENSHOT)) {
         versionDetailsPage.deleteAllIpadScreenshots();
@@ -77,6 +76,8 @@ public class UploadScreenshots extends ItunesConnectTask {
           versionDetailsPage.uploadIpadScreenshot(screenshot);
         }
         markGuideScreenshotsUploaded(directoryIPad);
+      } else {
+        System.out.println("Skipping ipad because incomplete: " + directoryIPad);
       }
 
       versionDetailsPage.clickSaveVersionDetails();
