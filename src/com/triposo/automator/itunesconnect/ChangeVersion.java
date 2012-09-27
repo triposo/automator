@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class ChangeVersion extends ItunesConnectTask {
   // To be changed!
-  private final String version = "1.7.2";
+  private final String version = "2.0.1";
 
   public static void main(String[] args) throws Exception {
     new ChangeVersion().run();
