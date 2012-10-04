@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class UploadScreenshots extends ItunesConnectTask {
 
   public static final String LAST_IPHONE_SCREENSHOT = "14-city-poi.png";
-  private static final String LAST_IPAD_SCREENSHOT = "TODO";
+  private static final String LAST_IPAD_SCREENSHOT = "14-city-poi.png";
 
   private WebDriver driver;
 
