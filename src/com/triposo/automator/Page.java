@@ -34,6 +34,15 @@ public abstract class Page {
     };
   }
 
+  protected Predicate<WebElement> isHidden() {
+    return new Predicate<WebElement>() {
+      @Override
+      public boolean apply(WebElement webElement) {
+        return !webElement.isDisplayed();
+      }
+    };
+  }
+
   protected Predicate<String> textIsOnPage() {
     return new Predicate<String>() {
       @Override

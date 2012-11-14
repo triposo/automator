@@ -2,6 +2,7 @@ package com.triposo.automator.itunesconnect;
 
 import com.triposo.automator.Page;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,20 +15,24 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Predicates.not;
 
 class VersionDetailsPage extends Page {
-  @FindBy(css = ".metadataFieldReadonly input")
-  WebElement version;
+  @FindBy(css = ".wrapper-topright-button input") private WebElement readyToUploadBinary;
+  @FindBy(linkText = "Binary Details") private WebElement binaryDetailsLink;
+
+  // The save button is the same in all the "lightboxes" (see below).
   @FindBy(id = "lightboxSaveButtonEnabled") WebElement saveVersionDetails;
+  @FindBy(id = "lightboxSaveButtonDisabled") WebElement saveVersionDetailsDisabled;
+  @FindBy(css = "img.lightboxCancelButton") WebElement cancelButton;
 
-  @FindBy(id = "fileInput_iPhoneandiPodtouchScreenshots") WebElement iphoneScreenshotUpload;
-  @FindBy(css = "#iPhoneandiPodtouchScreenshots .lcUploadSpinner") WebElement iphoneUploadSpinner;
-
+  // The "Edit Version Information" lightbox.
+  @FindBy(css = ".metadataFieldReadonly input") WebElement version;
   @FindBy(id = "fileInput_largeAppIcon") WebElement largeAppIconFile;
   @FindBy(css = "#versionInfoLightbox .lcUploadSpinner") WebElement versionInfoUploadSpinner;
 
+  // The "Edit Metadata and Uploads" lightbox.
+  @FindBy(id = "fileInput_iPhoneandiPodtouchScreenshots") WebElement iphoneScreenshotUpload;
+  @FindBy(css = "#iPhoneandiPodtouchScreenshots .lcUploadSpinner") WebElement iphoneUploadSpinner;
   @FindBy(id = "fileInput_iPadScreenshots") WebElement ipadScreenshotUpload;
   @FindBy(css = "#iPadScreenshots .lcUploadSpinner") WebElement ipadUploadSpinner;
-  @FindBy(css = ".wrapper-topright-button input") private WebElement readyToUploadBinary;
-  @FindBy(linkText = "Binary Details") private WebElement binaryDetailsLink;
 
   public VersionDetailsPage(WebDriver driver) {
     super(driver);
@@ -44,6 +49,16 @@ class VersionDetailsPage extends Page {
     final List<WebElement> elements = driver.findElements(By.cssSelector("img[alt=Edit]"));
     elements.get(1).click();
     // Make sure lightbox is loaded.
+    sleep(1000);
+  }
+
+  public void clickEditAppReviewInformation() {
+    // Make sure it's loaded.
+    sleep(1000);
+    final List<WebElement> elements = driver.findElements(By.cssSelector("img[alt=Edit]"));
+    elements.get(2).click();
+    // The Save button is initially disabled.
+    wait(saveVersionDetailsDisabled).until(isDisplayed());
     sleep(1000);
   }
 
@@ -108,8 +123,36 @@ class VersionDetailsPage extends Page {
     clickSaveVersionDetails();
   }
 
+  public void changeAppReviewInformation(
+      String firstName, String lastName, String emailAddress, String phoneNumber) {
+    clickEditAppReviewInformation();
+    List<WebElement> elements = driver.findElements(By.cssSelector("#reviewInfoUpdateContainer > div > div > span.metadataFieldReadonly > input"));
+    WebElement appReviewFirstName = elements.get(0);
+    appReviewFirstName.clear();
+    appReviewFirstName.sendKeys(firstName);
+    WebElement appReviewLastName = elements.get(1);
+    appReviewLastName.clear();
+    appReviewLastName.sendKeys(lastName);
+    WebElement appReviewEmailAddress = elements.get(2);
+    appReviewEmailAddress.clear();
+    appReviewEmailAddress.sendKeys(emailAddress);
+    WebElement appReviewPhoneNumber = elements.get(3);
+    appReviewPhoneNumber.clear();
+    appReviewPhoneNumber.sendKeys(phoneNumber);
+    sleep(500);
+    try {
+      clickSaveVersionDetails();
+    } catch (ElementNotVisibleException e) {
+      // Happens if the values did not change!
+      cancelButton.click();
+      wait(cancelButton).until(isHidden());
+    }
+  }
+
   public void clickSaveVersionDetails() {
     saveVersionDetails.click();
+    wait(saveVersionDetails).until(isHidden());
+    sleep(1000);
   }
 
   public LegalIssuesPage clickReadyToUploadBinary() {
