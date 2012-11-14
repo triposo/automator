@@ -49,11 +49,14 @@ public class AddNewVersion extends ItunesConnectTask {
     } else {
       versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
     }
-    versionDetailsPage.changeAppReviewInformation(
-        getProperty("appReviewFirstName"),
-        getProperty("appReviewLastName"),
-        getProperty("appReviewEmail"),
-        getProperty("appReviewPhone"));
+    if (appSummaryPage.containsText("ERROR MESSAGE I CAN'T FIND") ||
+        getProperty("appReviewForceUpdate", null) != null) {
+      versionDetailsPage.changeAppReviewInformation(
+          getProperty("appReviewFirstName"),
+          getProperty("appReviewLastName"),
+          getProperty("appReviewEmail"),
+          getProperty("appReviewPhone"));
+    }
     if (appSummaryPage.containsText("Prepare for Upload") || appSummaryPage.containsText("Developer Rejected")) {
       LegalIssuesPage legalIssuesPage = versionDetailsPage.clickReadyToUploadBinary();
       legalIssuesPage.theUsualBlahBlah();
