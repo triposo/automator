@@ -7,6 +7,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,11 +28,11 @@ class SearchResultPage extends Page {
     return new AppSummaryPage(driver);
   }
 
-  public void printStats() {
-    printStats(true);
+  public void printStats(Writer out) throws IOException {
+    printStats(true, out);
   }
 
-  public void printStats(boolean printHeader) {
+  public void printStats(boolean printHeader, Writer out) throws IOException {
     List<WebElement> rows = appsTable.findElements(By.tagName("TR"));
     Iterator<WebElement> rowIterator = rows.iterator();
     WebElement header = rowIterator.next();
@@ -38,12 +40,12 @@ class SearchResultPage extends Page {
       Iterator<WebElement> cellIterator = header.findElements(By.tagName("TH")).iterator();
       while (cellIterator.hasNext()) {
         WebElement th = cellIterator.next();
-        System.out.print(th.getText());
+        out.write(th.getText());
         if (cellIterator.hasNext()) {
-          System.out.print(",");
+          out.write(",");
         }
       }
-      System.out.println();
+      out.write("\n");
     }
     while (rowIterator.hasNext()) {
       WebElement row = rowIterator.next();
@@ -54,17 +56,18 @@ class SearchResultPage extends Page {
         // What's on the first line is related to the new version,
         // we're not (in this case) interested in the previous version.
         String newVersionInfo = text.split("\n")[0];
-        System.out.print(newVersionInfo);
+        out.write(newVersionInfo);
         if (cellIterator.hasNext()) {
-          System.out.print(",");
+          out.write(",");
         }
       }
-      System.out.println();
+      out.write("\n");
     }
     try {
       SearchResultPage page = clickNext();
-      page.printStats(false);
+      page.printStats(false, out);
     } catch (NoSuchElementException e) {
+      // We are on the last page. Nothing to do.
     }
   }
 
