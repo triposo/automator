@@ -27,7 +27,7 @@ public abstract class Task {
     try {
       properties.load(new FileInputStream("local.properties"));
 
-      if (properties.getProperty("browser", "firefox").equals("chrome")) {
+      if (getProperty("browser", "firefox").equals("chrome")) {
         driver = new ChromeDriver();
       } else {
         driver = new FirefoxDriver();
@@ -49,6 +49,14 @@ public abstract class Task {
     } else {
       throw new IllegalStateException(
           String.format("Need to specify property %s on command line or as a system property.", name));
+    }
+  }
+
+  protected String getProperty(String name, String defaultValue) {
+    try {
+      return getProperty(name);
+    } catch (IllegalStateException e) {
+      return defaultValue;
     }
   }
 
