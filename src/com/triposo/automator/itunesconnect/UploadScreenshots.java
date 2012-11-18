@@ -50,9 +50,9 @@ public class UploadScreenshots extends ItunesConnectTask {
   private void uploadScreenshots(String location, Integer appleId, boolean newVersion)
       throws VersionMissingException, MostRecentVersionRejectedException {
     if (appleId != null && appleId > 0) {
-      File directoryIPhone = new File(getProperty("ios.screenshots.iphone.dir") + "/" + location);
-      File directoryIPhone4Inch = new File(getProperty("ios.screenshots.iphone-4inch.dir") + "/" + location);
-      File directoryIPad = new File(getProperty("ios.screenshots.ipad.dir") + "/" + location);
+      File directoryIPhone = new File(getProperty("ios.screenshots.iphone.dir", "/nonexisting") + "/" + location);
+      File directoryIPhone4Inch = new File(getProperty("ios.screenshots.iphone-4inch.dir", "/nonexisting") + "/" + location);
+      File directoryIPad = new File(getProperty("ios.screenshots.ipad.dir", "/nonexisting") + "/" + location);
       List<File> screenshotsIPhone = getGuideScreenshots(directoryIPhone);
       List<File> screenshotsIPhone4Inch = getGuideScreenshots(directoryIPhone4Inch);
       List<File> screenshotsIPad = getGuideScreenshots(directoryIPad);
