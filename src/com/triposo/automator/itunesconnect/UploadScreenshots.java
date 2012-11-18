@@ -51,10 +51,12 @@ public class UploadScreenshots extends ItunesConnectTask {
       throws VersionMissingException, MostRecentVersionRejectedException {
     if (appleId != null && appleId > 0) {
       File directoryIPhone = new File(getProperty("ios.screenshots.iphone.dir") + "/" + location);
+      File directoryIPhone4Inch = new File(getProperty("ios.screenshots.iphone-4inch.dir") + "/" + location);
       File directoryIPad = new File(getProperty("ios.screenshots.ipad.dir") + "/" + location);
       List<File> screenshotsIPhone = getGuideScreenshots(directoryIPhone);
+      List<File> screenshotsIPhone4Inch = getGuideScreenshots(directoryIPhone4Inch);
       List<File> screenshotsIPad = getGuideScreenshots(directoryIPad);
-      if (screenshotsIPhone.isEmpty() && screenshotsIPad.isEmpty()) {
+      if (screenshotsIPhone.isEmpty() && screenshotsIPad.isEmpty() && screenshotsIPhone4Inch.isEmpty()) {
         // Nothing to upload.
         return;
       }
@@ -69,6 +71,15 @@ public class UploadScreenshots extends ItunesConnectTask {
         markGuideScreenshotsUploaded(directoryIPhone);
       } else {
         System.out.println("Skipping iphone because incomplete: " + directoryIPhone);
+      }
+      if (screenshotsContain(screenshotsIPhone4Inch, LAST_IPHONE_SCREENSHOT)) {
+        versionDetailsPage.deleteAllIphone4InchScreenshots();
+        for (File screenshot : screenshotsIPhone4Inch) {
+          versionDetailsPage.uploadIphone4InchScreenshot(screenshot);
+        }
+        markGuideScreenshotsUploaded(directoryIPhone4Inch);
+      } else {
+        System.out.println("Skipping iphone-4inch because incomplete: " + directoryIPhone4Inch);
       }
       if (screenshotsContain(screenshotsIPad, LAST_IPAD_SCREENSHOT)) {
         versionDetailsPage.deleteAllIpadScreenshots();

@@ -29,8 +29,10 @@ class VersionDetailsPage extends Page {
   @FindBy(css = "#versionInfoLightbox .lcUploadSpinner") WebElement versionInfoUploadSpinner;
 
   // The "Edit Metadata and Uploads" lightbox.
-  @FindBy(id = "fileInput_iPhoneandiPodtouchScreenshots") WebElement iphoneScreenshotUpload;
-  @FindBy(css = "#iPhoneandiPodtouchScreenshots .lcUploadSpinner") WebElement iphoneUploadSpinner;
+  @FindBy(id = "fileInput_35InchRetinaDisplayScreenshots") WebElement iphoneScreenshotUpload;
+  @FindBy(css = "#35InchRetinaDisplayScreenshots .lcUploadSpinner") WebElement iphoneUploadSpinner;
+  @FindBy(id = "fileInput_iPhone5") WebElement iphone4InchScreenshotUpload;
+  @FindBy(css = "#iPhone5 .lcUploadSpinner") WebElement iphone4InchUploadSpinner;
   @FindBy(id = "fileInput_iPadScreenshots") WebElement ipadScreenshotUpload;
   @FindBy(css = "#iPadScreenshots .lcUploadSpinner") WebElement ipadUploadSpinner;
 
@@ -63,7 +65,11 @@ class VersionDetailsPage extends Page {
   }
 
   public void deleteAllIphoneScreenshots() {
-    deleteScreenshots("iPhoneandiPodtouchScreenshots");
+    deleteScreenshots("35InchRetinaDisplayScreenshots");
+  }
+
+  public void deleteAllIphone4InchScreenshots() {
+    deleteScreenshots("iPhone5");
   }
 
   public void deleteAllIpadScreenshots() {
@@ -103,6 +109,12 @@ class VersionDetailsPage extends Page {
     iphoneScreenshotUpload.sendKeys(file.getAbsolutePath());
     wait(iphoneUploadSpinner).until(isDisplayed());
     wait(iphoneUploadSpinner).until(not(isDisplayed()));
+  }
+
+  public void uploadIphone4InchScreenshot(File file) {
+    iphone4InchScreenshotUpload.sendKeys(file.getAbsolutePath());
+    wait(iphone4InchUploadSpinner).until(isDisplayed());
+    wait(iphone4InchUploadSpinner).until(not(isDisplayed()));
   }
 
   public void uploadLargeIcon(File file) {
