@@ -64,29 +64,29 @@ class VersionDetailsPage extends Page {
 
   public void deleteAllIphoneScreenshots() {
     driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
-    deleteIpadScreenshot("iPhoneandiPodtouchScreenshots", "906");
-    deleteIpadScreenshot("iPhoneandiPodtouchScreenshots", "905");
-    deleteIpadScreenshot("iPhoneandiPodtouchScreenshots", "904");
-    deleteIpadScreenshot("iPhoneandiPodtouchScreenshots", "903");
-    deleteIpadScreenshot("iPhoneandiPodtouchScreenshots", "902");
-    deleteIpadScreenshot("iPhoneandiPodtouchScreenshots", "901");
-    deleteIpadScreenshot("iPhoneandiPodtouchScreenshots", "900");
+    deleteScreenshot("iPhoneandiPodtouchScreenshots", "906");
+    deleteScreenshot("iPhoneandiPodtouchScreenshots", "905");
+    deleteScreenshot("iPhoneandiPodtouchScreenshots", "904");
+    deleteScreenshot("iPhoneandiPodtouchScreenshots", "903");
+    deleteScreenshot("iPhoneandiPodtouchScreenshots", "902");
+    deleteScreenshot("iPhoneandiPodtouchScreenshots", "901");
+    deleteScreenshot("iPhoneandiPodtouchScreenshots", "900");
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
   }
 
   public void deleteAllIpadScreenshots() {
     driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
-    deleteIpadScreenshot("iPadScreenshots", "906");
-    deleteIpadScreenshot("iPadScreenshots", "905");
-    deleteIpadScreenshot("iPadScreenshots", "904");
-    deleteIpadScreenshot("iPadScreenshots", "903");
-    deleteIpadScreenshot("iPadScreenshots", "902");
-    deleteIpadScreenshot("iPadScreenshots", "901");
-    deleteIpadScreenshot("iPadScreenshots", "900");
+    deleteScreenshot("iPadScreenshots", "906");
+    deleteScreenshot("iPadScreenshots", "905");
+    deleteScreenshot("iPadScreenshots", "904");
+    deleteScreenshot("iPadScreenshots", "903");
+    deleteScreenshot("iPadScreenshots", "902");
+    deleteScreenshot("iPadScreenshots", "901");
+    deleteScreenshot("iPadScreenshots", "900");
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
   }
 
-  private void deleteIpadScreenshot(String containerId, String imageId) {
+  private void deleteScreenshot(String containerId, String imageId) {
     try {
       WebElement delete = driver.findElement(
           By.cssSelector("#lcUploaderImageContainer_" + containerId + "_" + imageId + " .lcUploaderImageDelete"));
