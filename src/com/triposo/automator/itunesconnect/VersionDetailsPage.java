@@ -63,26 +63,22 @@ class VersionDetailsPage extends Page {
   }
 
   public void deleteAllIphoneScreenshots() {
-    driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
-    deleteScreenshot("iPhoneandiPodtouchScreenshots", "906");
-    deleteScreenshot("iPhoneandiPodtouchScreenshots", "905");
-    deleteScreenshot("iPhoneandiPodtouchScreenshots", "904");
-    deleteScreenshot("iPhoneandiPodtouchScreenshots", "903");
-    deleteScreenshot("iPhoneandiPodtouchScreenshots", "902");
-    deleteScreenshot("iPhoneandiPodtouchScreenshots", "901");
-    deleteScreenshot("iPhoneandiPodtouchScreenshots", "900");
-    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+    deleteScreenshots("iPhoneandiPodtouchScreenshots");
   }
 
   public void deleteAllIpadScreenshots() {
+    deleteScreenshots("iPadScreenshots");
+  }
+
+  private void deleteScreenshots(String containerId) {
     driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
-    deleteScreenshot("iPadScreenshots", "906");
-    deleteScreenshot("iPadScreenshots", "905");
-    deleteScreenshot("iPadScreenshots", "904");
-    deleteScreenshot("iPadScreenshots", "903");
-    deleteScreenshot("iPadScreenshots", "902");
-    deleteScreenshot("iPadScreenshots", "901");
-    deleteScreenshot("iPadScreenshots", "900");
+    deleteScreenshot(containerId, "906");
+    deleteScreenshot(containerId, "905");
+    deleteScreenshot(containerId, "904");
+    deleteScreenshot(containerId, "903");
+    deleteScreenshot(containerId, "902");
+    deleteScreenshot(containerId, "901");
+    deleteScreenshot(containerId, "900");
     driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
   }
 
