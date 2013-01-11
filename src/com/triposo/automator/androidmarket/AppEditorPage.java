@@ -82,7 +82,7 @@ public class AppEditorPage extends Page {
     } else {
       fileData.sendKeys(file.getAbsolutePath());
       uploadButton.click();
-      wait(uploadSaveButton).withTimeout(15, TimeUnit.MINUTES).until(isDisplayed());
+      wait(uploadSaveButton).withTimeout(2, TimeUnit.MINUTES).until(isDisplayed());
     }
     uploadSaveButton.click();
     try {
