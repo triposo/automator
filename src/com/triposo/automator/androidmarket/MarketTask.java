@@ -25,7 +25,7 @@ public abstract class MarketTask extends Task {
   }
 
   protected String rootUrl() {
-    return "https://play.google.com/apps/publish/Home?dev_acc=" + getDevAccountId();
+    return "https://play.google.com/apps/publish/Home?switch_back=1&dev_acc=" + getDevAccountId();
   }
 
   protected AppEditorPage gotoAppEditor(String packageName) throws AppMissingException {
