@@ -151,6 +151,7 @@ public class AppEditorPage extends Page {
   }
 
   public void waitForTabsLoaded() throws AppMissingException {
+    sleep(500);
     try {
       wait("Product details").until(textIsOnPage());
       wait("APK files").until(textIsOnPage());

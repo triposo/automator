@@ -75,7 +75,7 @@ public class LaunchNewVersion extends MarketTask {
           System.out.println("Skipping because apk too big: " + e.getMessage());
         } catch (AppMissingException e) {
           notYetLaunched.add(location);
-          System.out.println("Skipping because app not up to date: " + location);
+          System.out.println("Skipping because app not yet launched: " + location);
         } catch (Exception e) {
           failed.add(location);
           e.printStackTrace();

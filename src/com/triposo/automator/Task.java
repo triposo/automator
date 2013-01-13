@@ -62,7 +62,7 @@ public abstract class Task {
 
   protected Map getGuides() throws FileNotFoundException {
     Yaml yaml = new Yaml();
-    return (Map) yaml.load(new FileInputStream(new File("../pipeline/config/guides.yaml")));
+    return (Map) yaml.load(new FileInputStream(new File("../droidguide/guides.yaml")));
   }
 
   protected List<File> getGuideScreenshots(File dir) {
