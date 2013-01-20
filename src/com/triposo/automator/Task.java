@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -60,12 +61,27 @@ public abstract class Task {
     }
   }
 
-  protected Map getGuides() throws FileNotFoundException {
+  protected Map getAllGuides() throws FileNotFoundException {
     Yaml yaml = new Yaml();
     String yamlPath = getProperty("yaml", "../pipeline/config/guides.yaml");
     File yamlFile = new File(yamlPath);
     return (Map) yaml.load(new FileInputStream(yamlFile));
   }
+
+  protected Map getGuides() throws FileNotFoundException {
+    Map guides = getAllGuides();
+    Iterator guidesIterator = guides.entrySet().iterator();
+    while (guidesIterator.hasNext()) {
+      Map.Entry guideEntry = (Map.Entry) guidesIterator.next();
+      Map guide = (Map) guideEntry.getValue();
+      if (!isGuideValid(guide)) {
+        guidesIterator.remove();
+      }
+    }
+    return guides;
+  }
+
+  protected abstract boolean isGuideValid(Map guide);
 
   protected List<File> getGuideScreenshots(File dir) {
     if (!dir.isDirectory()) {

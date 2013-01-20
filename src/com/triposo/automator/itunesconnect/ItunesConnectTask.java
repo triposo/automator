@@ -10,19 +10,11 @@ import java.util.Iterator;
 import java.util.Map;
 
 public abstract class ItunesConnectTask extends Task {
+
   @Override
-  protected Map getGuides() throws FileNotFoundException {
-    Map guides = super.getGuides();
-    Iterator guidesIterator = guides.entrySet().iterator();
-    while (guidesIterator.hasNext()) {
-      Map.Entry guideEntry = (Map.Entry) guidesIterator.next();
-      Map guide = (Map) guideEntry.getValue();
-      Map ios = (Map) guide.get("ios");
-      if (ios == null) {
-        guidesIterator.remove();
-      }
-    }
-    return guides;
+  protected boolean isGuideValid(Map guide) {
+    // If the ios subsection exists, the ios app exists.
+    return guide.get("ios") != null;
   }
 
   protected Integer getAppleIdOfGuide(Map guide) {

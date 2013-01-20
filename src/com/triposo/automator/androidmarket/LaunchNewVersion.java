@@ -62,25 +62,24 @@ public class LaunchNewVersion extends MarketTask {
         continue;
       }
       if (location.equals("world")) {
+        // Has to be updated manually.
         continue;
       }
       Map guide = (Map) entry.getValue();
-      if (Boolean.TRUE.equals(guide.get("apk"))) {
-        System.out.println("Processing " + location);
-        try {
-          launchNewVersion(location, guide);
-          System.out.println("Done " + location);
-        } catch (ApkTooBigException e) {
-          tooBig.add(location);
-          System.out.println("Skipping because apk too big: " + e.getMessage());
-        } catch (AppMissingException e) {
-          notYetLaunched.add(location);
-          System.out.println("Skipping because app not yet launched: " + location);
-        } catch (Exception e) {
-          failed.add(location);
-          e.printStackTrace();
-          System.out.println("Skipping because operation failed: " + location);
-        }
+      System.out.println("Processing " + location);
+      try {
+        launchNewVersion(location, guide);
+        System.out.println("Done " + location);
+      } catch (ApkTooBigException e) {
+        tooBig.add(location);
+        System.out.println("Skipping because apk too big: " + e.getMessage());
+      } catch (AppMissingException e) {
+        notYetLaunched.add(location);
+        System.out.println("Skipping because app not yet launched: " + location);
+      } catch (Exception e) {
+        failed.add(location);
+        e.printStackTrace();
+        System.out.println("Skipping because operation failed: " + location);
       }
     }
 

@@ -6,9 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.UnhandledAlertException;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+
 import java.util.Locale;
 import java.util.Map;
 
@@ -16,6 +14,11 @@ import java.util.Map;
  * A Google Play related task.
  */
 public abstract class MarketTask extends Task {
+
+  @Override
+  protected boolean isGuideValid(Map guide) {
+    return Boolean.TRUE.equals(guide.get("apk"));
+  }
 
   protected HomePage gotoHome() {
     gotoPage(rootUrl());

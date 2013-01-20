@@ -25,19 +25,14 @@ public class UnpublishAll extends MarketTask {
       if (location.equals("world")) {
         continue;
       }
-      Map guide = (Map) entry.getValue();
-      if (Boolean.TRUE.equals(guide.get("apk"))) {
-        System.out.println("Processing " + location);
-
-        try {
-          unpublishAll(location);
-        } catch (Exception e) {
-          e.printStackTrace();
-          System.out.println("Error processing, skipping: " + location);
-        }
-
-        System.out.println("Done " + location);
+      System.out.println("Processing " + location);
+      try {
+        unpublishAll(location);
+      } catch (Exception e) {
+        e.printStackTrace();
+        System.out.println("Error processing, skipping: " + location);
       }
+      System.out.println("Done " + location);
     }
 
     System.out.println("All done.");
