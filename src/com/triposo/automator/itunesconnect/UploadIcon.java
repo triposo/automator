@@ -10,6 +10,7 @@ public class UploadIcon extends ItunesConnectTask {
   }
 
   public void doRun() throws Exception {
+    String splashDir = getProperty("ios.splash.dir");
     for (Object entry : getGuides().entrySet()) {
       Map.Entry guideEntry = (Map.Entry) entry;
       String location = (String) guideEntry.getKey();
@@ -19,7 +20,7 @@ public class UploadIcon extends ItunesConnectTask {
         System.out.println("Processing " + location);
 
         try {
-          uploadIcon(location, appleId);
+          uploadIcon(location, appleId, splashDir);
         } catch (Exception e) {
           e.printStackTrace();
           System.out.println("Error processing, skipping: " + location);
@@ -32,7 +33,7 @@ public class UploadIcon extends ItunesConnectTask {
     System.out.println("All done.");
   }
 
-  private void uploadIcon(String location, Integer appleId) {
+  private void uploadIcon(String location, Integer appleId, String splashDir) {
     AppSummaryPage appSummaryPage = gotoAppSummary(appleId);
     if (appSummaryPage.containsText("The most recent version of your app has been rejected")) {
       System.out.println("Last version rejected, skipping: " + appleId);
@@ -41,7 +42,8 @@ public class UploadIcon extends ItunesConnectTask {
     VersionDetailsPage versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
     versionDetailsPage.clickEditVersionDetails();
 
-    versionDetailsPage.uploadLargeIcon(new File("../../Dropbox/splash/" + location.toLowerCase() + "/icon1024x1024.png"));
+    File iconFile = new File(splashDir + "/" + location.toLowerCase() + "/icon1024x1024.png");
+    versionDetailsPage.uploadLargeIcon(iconFile);
 
     versionDetailsPage.clickSaveVersionDetails();
   }
