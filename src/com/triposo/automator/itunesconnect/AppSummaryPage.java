@@ -8,7 +8,8 @@ import org.openqa.selenium.support.FindBy;
 class AppSummaryPage extends Page {
   @FindBy(css = ".left .app-icon")
   WebElement leftHandSideVersionDetails;
-  @FindBy(xpath = "//div[contains(@class, 'right')]//div[contains(@class, 'app-icon')]//a[text() = 'Add Version']")
+  // This has to work with both "Add Version" and "View Details".
+  @FindBy(xpath = "//div[contains(@class, 'right')]//div[contains(@class, 'app-icon')]/a")
   WebElement rightHandSideVersionDetails;
 
   public AppSummaryPage(WebDriver driver) {
