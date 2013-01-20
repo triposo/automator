@@ -68,7 +68,7 @@ public abstract class Task {
     return (Map) yaml.load(new FileInputStream(yamlFile));
   }
 
-  protected Map getGuides() throws FileNotFoundException {
+  protected Map getAllValidGuides() throws FileNotFoundException {
     Map guides = getAllGuides();
     Iterator guidesIterator = guides.entrySet().iterator();
     while (guidesIterator.hasNext()) {
@@ -82,6 +82,33 @@ public abstract class Task {
   }
 
   protected abstract boolean isGuideValid(Map guide);
+
+  /**
+   * Get the guides that should be touched.
+   *
+   * The only.guides property can be used to specify a list of guide ids
+   * separated by space/comma.
+   */
+  protected Map getGuides() throws FileNotFoundException {
+    Map guides = getAllValidGuides();
+    List<String> only = getOnly();
+    if (only.isEmpty()) {
+      return guides;
+    }
+    Iterator guidesIterator = guides.entrySet().iterator();
+    while (guidesIterator.hasNext()) {
+      Map.Entry guideEntry = (Map.Entry) guidesIterator.next();
+      if (!only.contains(guideEntry.getKey())) {
+        guidesIterator.remove();
+      }
+    }
+    return guides;
+  }
+
+  private List<String> getOnly() {
+    String only = getProperty("only.guides", "");
+    return Lists.newArrayList(only.split("[\\s,]"));
+  }
 
   protected List<File> getGuideScreenshots(File dir) {
     if (!dir.isDirectory()) {
