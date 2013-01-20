@@ -43,7 +43,7 @@ class VersionDetailsPage extends Page {
   public void clickEdit(int index) {
     // Make sure it's loaded.
     sleep(1000);
-    final List<WebElement> elements = driver.findElements(By.cssSelector("img[alt=Edit]"));
+    final List<WebElement> elements = driver.findElements(By.xpath("//h2/a/span[text() = 'Edit']"));
     elements.get(index).click();
     // Make sure lightbox is loaded.
     sleep(1000);
