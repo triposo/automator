@@ -40,25 +40,25 @@ class VersionDetailsPage extends Page {
     super(driver);
   }
 
-  public void clickEditVersionDetails() {
-    final List<WebElement> elements = driver.findElements(By.cssSelector("img[alt=Edit]"));
-    elements.get(0).click();
-  }
-
-  public void clickEditMetadataAndUploads() {
+  public void clickEdit(int index) {
     // Make sure it's loaded.
     sleep(1000);
     final List<WebElement> elements = driver.findElements(By.cssSelector("img[alt=Edit]"));
-    elements.get(1).click();
+    elements.get(index).click();
     // Make sure lightbox is loaded.
     sleep(1000);
   }
 
+  public void clickEditVersionDetails() {
+    clickEdit(0);
+  }
+
+  public void clickEditMetadataAndUploads() {
+    clickEdit(1);
+  }
+
   public void clickEditAppReviewInformation() {
-    // Make sure it's loaded.
-    sleep(1000);
-    final List<WebElement> elements = driver.findElements(By.cssSelector("img[alt=Edit]"));
-    elements.get(2).click();
+    clickEdit(2);
     // The Save button is initially disabled.
     wait(saveVersionDetailsDisabled).until(isDisplayed());
     sleep(1000);
