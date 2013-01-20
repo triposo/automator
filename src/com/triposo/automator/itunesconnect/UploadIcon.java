@@ -1,6 +1,9 @@
 package com.triposo.automator.itunesconnect;
 
+import com.google.common.collect.Lists;
+
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 public class UploadIcon extends ItunesConnectTask {
@@ -11,6 +14,8 @@ public class UploadIcon extends ItunesConnectTask {
 
   public void doRun() throws Exception {
     String splashDir = getProperty("ios.splash.dir");
+
+    List<String> failed = Lists.newArrayList();
     for (Object entry : getGuides().entrySet()) {
       Map.Entry guideEntry = (Map.Entry) entry;
       String location = (String) guideEntry.getKey();
@@ -22,6 +27,7 @@ public class UploadIcon extends ItunesConnectTask {
         try {
           uploadIcon(location, appleId, splashDir);
         } catch (Exception e) {
+          failed.add(location);
           e.printStackTrace();
           System.out.println("Error processing, skipping: " + location);
         }
@@ -29,8 +35,11 @@ public class UploadIcon extends ItunesConnectTask {
         System.out.println("Done " + location);
       }
     }
-
-    System.out.println("All done.");
+    if (failed.isEmpty()) {
+      System.out.println("All done.");
+    } else {
+      System.out.println("Failed: " + failed);
+    }
   }
 
   private void uploadIcon(String location, Integer appleId, String splashDir) {
