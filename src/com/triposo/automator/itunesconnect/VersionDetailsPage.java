@@ -99,12 +99,6 @@ class VersionDetailsPage extends Page {
     }
   }
 
-  public void uploadIpadScreenshot(File file) {
-    ipadScreenshotUpload.sendKeys(file.getAbsolutePath());
-    wait(ipadUploadSpinner).until(isDisplayed());
-    wait(ipadUploadSpinner).until(not(isDisplayed()));
-  }
-
   public void uploadIphoneScreenshot(File file) {
     iphoneScreenshotUpload.sendKeys(file.getAbsolutePath());
     wait(iphoneUploadSpinner).until(isDisplayed());
@@ -115,6 +109,12 @@ class VersionDetailsPage extends Page {
     iphone4InchScreenshotUpload.sendKeys(file.getAbsolutePath());
     wait(iphone4InchUploadSpinner).until(isDisplayed());
     wait(iphone4InchUploadSpinner).until(not(isDisplayed()));
+  }
+
+  public void uploadIpadScreenshot(File file) {
+    ipadScreenshotUpload.sendKeys(file.getAbsolutePath());
+    wait(ipadUploadSpinner).until(isDisplayed());
+    wait(ipadUploadSpinner).until(not(isDisplayed()));
   }
 
   public void uploadLargeIcon(File file) {
