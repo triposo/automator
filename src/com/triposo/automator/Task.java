@@ -107,6 +107,10 @@ public abstract class Task {
 
   private List<String> getOnly() {
     String only = getProperty("only.guides", "");
+    if (only.trim().length() == 0) {
+      // Avoid returning a list with a single empty string.
+      return Lists.newArrayList();
+    }
     return Lists.newArrayList(only.split("[\\s,]"));
   }
 
