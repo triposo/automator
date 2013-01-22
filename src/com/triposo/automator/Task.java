@@ -151,14 +151,5 @@ public abstract class Task {
     }
   }
 
-  protected boolean screenshotsContain(List<File> files, String fileName) {
-    for (File file : files) {
-      if (file.getName().equals(fileName)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   public abstract void doRun() throws Exception;
 }

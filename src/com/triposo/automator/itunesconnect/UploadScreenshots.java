@@ -9,8 +9,7 @@ import java.util.Map;
 
 public class UploadScreenshots extends ItunesConnectTask {
 
-  public static final String LAST_IPHONE_SCREENSHOT = "14-city-poi.png";
-  private static final String LAST_IPAD_SCREENSHOT = "14-city-poi.png";
+  private static final int SCREENSHOT_COUNT = 5;
 
   public static void main(String[] args) throws Exception {
     new UploadScreenshots().run();
@@ -56,7 +55,7 @@ public class UploadScreenshots extends ItunesConnectTask {
       VersionDetailsPage versionDetailsPage = getVersionDetailsPage(appleId, newVersion);
       versionDetailsPage.clickEditMetadataAndUploads();
 
-      if (screenshotsContain(screenshotsIPhone, LAST_IPHONE_SCREENSHOT)) {
+      if (screenshotsIPhone.size() == SCREENSHOT_COUNT) {
         versionDetailsPage.deleteAllIphoneScreenshots();
         for (File screenshot : screenshotsIPhone) {
           versionDetailsPage.uploadIphoneScreenshot(screenshot);
@@ -65,7 +64,7 @@ public class UploadScreenshots extends ItunesConnectTask {
       } else {
         System.out.println("Skipping iphone because incomplete: " + directoryIPhone);
       }
-      if (screenshotsContain(screenshotsIPhone4Inch, LAST_IPHONE_SCREENSHOT)) {
+      if (screenshotsIPhone4Inch.size() == SCREENSHOT_COUNT) {
         versionDetailsPage.deleteAllIphone4InchScreenshots();
         for (File screenshot : screenshotsIPhone4Inch) {
           versionDetailsPage.uploadIphone4InchScreenshot(screenshot);
@@ -74,7 +73,7 @@ public class UploadScreenshots extends ItunesConnectTask {
       } else {
         System.out.println("Skipping iphone-4inch because incomplete: " + directoryIPhone4Inch);
       }
-      if (screenshotsContain(screenshotsIPad, LAST_IPAD_SCREENSHOT)) {
+      if (screenshotsIPad.size() == SCREENSHOT_COUNT) {
         versionDetailsPage.deleteAllIpadScreenshots();
         for (File screenshot : screenshotsIPad) {
           versionDetailsPage.uploadIpadScreenshot(screenshot);
