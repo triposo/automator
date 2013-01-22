@@ -6,14 +6,11 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class UploadScreenshots extends ItunesConnectTask {
 
   public static final String LAST_IPHONE_SCREENSHOT = "14-city-poi.png";
   private static final String LAST_IPAD_SCREENSHOT = "14-city-poi.png";
-
-  private WebDriver driver;
 
   public static void main(String[] args) throws Exception {
     new UploadScreenshots().run();
@@ -21,10 +18,6 @@ public class UploadScreenshots extends ItunesConnectTask {
 
   @Override
   public void doRun() throws Exception {
-    driver = new FirefoxDriver();
-    driver.manage().window().setSize(new Dimension(1200, 1000));
-    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-
     for (Object entry : getGuides().entrySet()) {
       Map.Entry guideEntry = (Map.Entry) entry;
       String location = (String) guideEntry.getKey();
