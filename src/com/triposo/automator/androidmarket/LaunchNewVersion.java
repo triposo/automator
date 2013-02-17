@@ -16,22 +16,21 @@ public class LaunchNewVersion extends MarketTask {
 
   // To be changed when launching:
   // This is the what's new message for standalone guides!
-  protected static final String RECENT_CHANGES = "1.9\n" +
+  protected static final String RECENT_CHANGES = "1.9.1\n" +
+      "- Account screen to specify your preferred units for distances, temperatures and other options;\n" +
+      "- Improved UI for adding and viewing entries in the travel log;\n" +
+      "- Attach photos from the Gallery to your travel log;\n" +
+      "- Bug fixes and other improvements.\n" +
+      "\n" +
+      "1.9\n" +
       "- New action bar button for quickly adding photos, notes and checkins to your travel log;\n" +
       "- New travel log display;\n" +
       "- Allow editing travel log entries;\n" +
       "- Travel log syncing between devices;\n" +
-      "- Bug fixes and other improvements;\n" +
       "Data:\n" +
-      "- More info on national parks.\n" +
-      "\n" +
-      "1.8.6\n" +
-      "- Allow bookmarking tours and Travelpedia pages;\n" +
-      "- Added an app menu for accessing quickly the map or the travel log;\n" +
-      "Data:\n" +
-      "- More images, better location coverage.\n";
-  protected static final String VERSION_NAME = "1.9";
-  protected static final String VERSION_CODE = "150";
+      "- More info on national parks.\n";
+  protected static final String VERSION_NAME = "1.9.1";
+  protected static final String VERSION_CODE = "151";
   protected static final String SHEET_NAME = "24";
 
   private static final String APKS_FOLDER = SHEET_NAME + "-" + VERSION_NAME;
