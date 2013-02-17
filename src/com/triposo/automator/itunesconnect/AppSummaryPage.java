@@ -8,9 +8,10 @@ import org.openqa.selenium.support.FindBy;
 class AppSummaryPage extends Page {
   @FindBy(xpath = "//div[contains(@class, 'version-container') and contains(h3/text(), 'Current Version')]/div[contains(@class, 'app-icon')]/a")
   WebElement currentVersionDetails;
-  // This has to work with both "Add Version" and "View Details".
   @FindBy(xpath = "//div[contains(@class, 'version-container') and contains(h3/text(), 'New Version')]/div[contains(@class, 'app-icon')]/a")
   WebElement newVersionDetails;
+  @FindBy(xpath = "//a[contains(text(), 'Add Version')]")
+  WebElement addVersion;
 
   public AppSummaryPage(WebDriver driver) {
     super(driver);
@@ -22,7 +23,7 @@ class AppSummaryPage extends Page {
   }
 
   public NewVersionPage clickAddVersion() {
-    newVersionDetails.click();
+    addVersion.click();
     return new NewVersionPage(driver);
   }
 

@@ -38,7 +38,7 @@
   </target>
 
   <target name="run" depends="compile">
-      <java classname="${classname}" classpathref="run.path.id">
+      <java classname="${classname}" classpathref="run.path.id" failonerror="true">
         <syspropertyset>
           <propertyref builtin="all"/>
         </syspropertyset>
