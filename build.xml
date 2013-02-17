@@ -91,6 +91,9 @@
         <path refid="lib.path.id"/>
         <pathelement location="build/compiled"/>
       </classpath>
+      <syspropertyset>
+        <propertyref builtin="all"/>
+      </syspropertyset>
       <sysproperty key="webdriver.chrome.driver" value="${chromedriver.temp.dir}/${chromedriver.executable}"/>
     </java>
   </target>
@@ -102,6 +105,9 @@
         <path refid="lib.path.id"/>
         <pathelement location="build/compiled"/>
       </classpath>
+      <syspropertyset>
+        <propertyref builtin="all"/>
+      </syspropertyset>
       <sysproperty key="webdriver.chrome.driver" value="${chromedriver.temp.dir}/${chromedriver.executable}"/>
     </java>
   </target>
