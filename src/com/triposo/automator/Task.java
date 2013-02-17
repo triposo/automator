@@ -63,7 +63,7 @@ public abstract class Task {
 
   protected Map getAllGuides() throws FileNotFoundException {
     Yaml yaml = new Yaml();
-    String yamlPath = getProperty("yaml", "../pipeline/config/guides.yaml");
+    String yamlPath = getProperty("yaml", "../triposo3/pipeline/config/guides.yaml");
     File yamlFile = new File(yamlPath);
     return (Map) yaml.load(new FileInputStream(yamlFile));
   }
