@@ -1,6 +1,7 @@
 package com.triposo.automator.itunesconnect;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class AddNewVersion extends ItunesConnectTask {
 
@@ -47,7 +48,12 @@ public class AddNewVersion extends ItunesConnectTask {
       newVersionPage.setWhatsnew(whatsnew);
       versionDetailsPage = newVersionPage.clickSave();
     } else {
-      versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
+      try {
+        versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
+      } catch (NoSuchElementException e) {
+        // When this is the first version of a guide we have to go to the current version.
+        versionDetailsPage = appSummaryPage.clickCurrentVersionViewDetails();
+      }
     }
     if (appSummaryPage.containsText("ERROR MESSAGE I CAN'T FIND") ||
         getProperty("appReviewForceUpdate", null) != null) {
