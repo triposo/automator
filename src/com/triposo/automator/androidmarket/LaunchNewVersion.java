@@ -46,10 +46,10 @@ public class LaunchNewVersion extends MarketTask {
     Logger logger = Logger.getLogger("");
     logger.setLevel(Level.OFF);
 
+    Map guides = getGuides();
     gotoHome();
     Set<String> upToDate = getUpToDateGuides();
     System.out.println("Up to date apps: " + upToDate);
-    Map guides = getGuides();
     List<String> tooBig = Lists.newArrayList();
     List<String> notYetLaunched = Lists.newArrayList();
     List<String> failed = Lists.newArrayList();
