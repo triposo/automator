@@ -50,7 +50,7 @@ public class AddNewVersion extends ItunesConnectTask {
     } else {
       try {
         versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
-      } catch (NoSuchElementException e) {
+      } catch (Exception e) {
         // When this is the first version of a guide we have to go to the current version.
         versionDetailsPage = appSummaryPage.clickCurrentVersionViewDetails();
       }
