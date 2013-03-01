@@ -10,32 +10,15 @@ public class AddNewVersion extends ItunesConnectTask {
   }
 
   public void doRun() throws Exception {
+    int appleId = Integer.parseInt(getProperty("appleId"));
     String version = getProperty("version");
     String whatsnew = getProperty("whatsnew");
-
-    for (Object entry : getGuides().entrySet()) {
-      Map.Entry guideEntry = (Map.Entry) entry;
-      String location = (String) guideEntry.getKey();
-      Map guide = (Map) guideEntry.getValue();
-      Integer appleId = getAppleIdOfGuide(guide);
-      if (appleId != null && appleId > 0) {
-        System.out.println("Processing " + location);
-
-        try {
-          addNewVersion(appleId, version, whatsnew);
-        } catch (Exception e) {
-          e.printStackTrace();
-          System.out.println("Error processing, skipping: " + location);
-        }
-
-        System.out.println("Done " + location);
-      }
-    }
-
+    String keywords = getProperty("keywords");
+    addNewVersion(appleId, version, whatsnew, keywords);
     System.out.println("All done.");
   }
 
-  private void addNewVersion(Integer appleId, String version, String whatsnew) {
+  private void addNewVersion(Integer appleId, String version, String whatsnew, String keywords) {
     AppSummaryPage appSummaryPage = gotoAppSummary(appleId);
     if (appSummaryPage.containsText("The most recent version of your app has been rejected")) {
       System.out.println("Last version rejected, skipping: " + appleId);
@@ -55,6 +38,7 @@ public class AddNewVersion extends ItunesConnectTask {
         versionDetailsPage = appSummaryPage.clickCurrentVersionViewDetails();
       }
     }
+    versionDetailsPage.changeMetadata(whatsnew, keywords);
     if (appSummaryPage.containsText("ERROR MESSAGE I CAN'T FIND") ||
         getProperty("appReviewForceUpdate", null) != null) {
       versionDetailsPage.changeAppReviewInformation(

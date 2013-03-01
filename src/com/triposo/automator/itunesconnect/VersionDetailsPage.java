@@ -157,6 +157,31 @@ class VersionDetailsPage extends Page {
     }
   }
 
+  public void changeMetadata(String whatsnew, String keywords) {
+    clickEditMetadataAndUploads();
+    List<WebElement> textareas = driver.findElements(By.cssSelector("#localizationLightbox textarea"));
+//    WebElement descriptionElement = textareas.get(0);
+    WebElement whatsnewElement = textareas.get(1);
+    whatsnewElement.clear();
+    whatsnewElement.sendKeys(whatsnew);
+
+    List<WebElement> inputs = driver.findElements(By.cssSelector("#localizationLightbox input"));
+    WebElement keywordsElement = inputs.get(1);
+    keywordsElement.clear();
+    keywordsElement.sendKeys(keywords);
+    WebElement supportUrlElement = inputs.get(2);
+    supportUrlElement.clear();
+    supportUrlElement.sendKeys("http://www.triposo.com");
+    sleep(500);
+    try {
+      clickSaveVersionDetails();
+    } catch (ElementNotVisibleException e) {
+      // Happens if the values did not change!
+      cancelButton.click();
+      wait(cancelButton).until(isHidden());
+    }
+  }
+
   public void clickSaveVersionDetails() {
     saveVersionDetails.click();
     wait(saveVersionDetails).until(isHidden());
