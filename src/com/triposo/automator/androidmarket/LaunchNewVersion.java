@@ -14,27 +14,6 @@ import java.util.logging.Logger;
 
 public class LaunchNewVersion extends MarketTask {
 
-  // To be changed when launching:
-  // This is the what's new message for standalone guides!
-  protected static final String RECENT_CHANGES = "1.9.1\n" +
-      "- Account screen to specify your preferred units for distances, temperatures and other options;\n" +
-      "- Improved UI for adding and viewing entries in the travel log;\n" +
-      "- Attach photos from the Gallery to your travel log;\n" +
-      "- Bug fixes and other improvements.\n" +
-      "\n" +
-      "1.9\n" +
-      "- New action bar button for quickly adding photos, notes and checkins to your travel log;\n" +
-      "- New travel log display;\n" +
-      "- Allow editing travel log entries;\n" +
-      "- Travel log syncing between devices;\n" +
-      "Data:\n" +
-      "- More info on national parks.\n";
-  protected static final String VERSION_NAME = "1.9.1";
-  protected static final String VERSION_CODE = "151";
-  protected static final String SHEET_NAME = "24";
-
-  private static final String APKS_FOLDER = SHEET_NAME + "-" + VERSION_NAME;
-
   private static final int MAX_APK_SIZE_MB = 50;
 
   public static void main(String[] args) throws Exception {
@@ -46,9 +25,13 @@ public class LaunchNewVersion extends MarketTask {
     Logger logger = Logger.getLogger("");
     logger.setLevel(Level.OFF);
 
+    String version = getProperty("version");
+    String versionCode = getProperty("versionCode");
+    String whatsnew = getProperty("whatsnew");
+    String sheet = getProperty("sheet");
+
     Map guides = getGuides();
-    gotoHome();
-    Set<String> upToDate = getUpToDateGuides();
+    Set<String> upToDate = getUpToDateGuides(version);
     System.out.println("Up to date apps: " + upToDate);
     List<String> tooBig = Lists.newArrayList();
     List<String> notYetLaunched = Lists.newArrayList();
@@ -67,7 +50,7 @@ public class LaunchNewVersion extends MarketTask {
       Map guide = (Map) entry.getValue();
       System.out.println("Processing " + location);
       try {
-        launchNewVersion(location, guide);
+        launchNewVersion(location, guide, sheet, version, versionCode, whatsnew);
         System.out.println("Done " + location);
       } catch (ApkTooBigException e) {
         tooBig.add(location);
@@ -89,11 +72,11 @@ public class LaunchNewVersion extends MarketTask {
     System.out.println("Please manually update the world guide!");
   }
 
-  protected Set<String> getUpToDateGuides() {
+  protected Set<String> getUpToDateGuides(String version) {
     Set<String> locations = Sets.newHashSet();
     HomePage homePage = gotoHome();
     while (true) {
-      locations.addAll(homePage.getAlreadyLaunched(VERSION_NAME));
+      locations.addAll(homePage.getAlreadyLaunched(version));
       if (!homePage.hasNext()) {
         break;
       }
@@ -102,12 +85,14 @@ public class LaunchNewVersion extends MarketTask {
     return locations;
   }
 
-  private void launchNewVersion(String location, Map guide) throws Exception {
+  private void launchNewVersion(
+      String location, Map guide, String sheet, String version,
+      String versionCode, String whatsnew) throws Exception {
     String appName = (String) guide.get("app_name");
     if (appName == null) {
       appName = location;
     }
-    File apksDir = new File(getProperty("android.apks.dir"), APKS_FOLDER);
+    File apksDir = new File(getProperty("android.apks.dir"), sheet + "-" + version);
     File apkFile = new File(apksDir, appName + ".apk");
     if (!apkFile.isFile()) {
       throw new FileNotFoundException(apkFile.toString());
@@ -118,10 +103,10 @@ public class LaunchNewVersion extends MarketTask {
 
     AppEditorPage appEditorPage = gotoAppEditorForLocation(location);
     appEditorPage.clickApkFilesTab();
-    appEditorPage.uploadApk(VERSION_CODE, apkFile);
-    appEditorPage.clickActivate(VERSION_CODE);
+    appEditorPage.uploadApk(versionCode, apkFile);
+    appEditorPage.clickActivate(versionCode);
     appEditorPage.clickProductDetailsTab();
-    appEditorPage.enterRecentChanges(RECENT_CHANGES);
+    appEditorPage.enterRecentChanges(whatsnew);
     appEditorPage.theLegalBlahBlah();
     appEditorPage.enterPrivacyPolicyLink("http://www.triposo.com/tandc.html");
     appEditorPage.clickSave();

@@ -30,8 +30,10 @@ public class UpdateScreenshots extends LaunchNewVersion {
     Logger logger = Logger.getLogger("");
     logger.setLevel(Level.OFF);
 
+    String version = getProperty("version");
+
     gotoHome();
-    Set<String> upToDateGuides = getUpToDateGuides();
+    Set<String> upToDateGuides = getUpToDateGuides(version);
     System.out.println("Up to date apps: " + upToDateGuides);
     Map<String, File> guides = getGuidesWithScreenshots();
     if (locations.isEmpty()) {
