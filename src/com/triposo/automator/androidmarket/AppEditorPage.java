@@ -48,6 +48,12 @@ public class AppEditorPage extends Page {
   WebElement screenshotData;
   @FindBy(id = "gwt-debug-app_editor-screen_shot-upload_form-upload_button")
   WebElement screenshotsSaveButton;
+  @FindBy(xpath = "//div[div/div/text() = 'High Resolution Application Icon']//a[@id = 'gwt-debug-image_widget_0-remove_link']")
+  WebElement deleteHighResIconLink;
+  @FindBy(id = "gwt-debug-app_editor-hi_res_icon-upload_form-upload_box")
+  WebElement highResIcon;
+  @FindBy(id = "gwt-debug-app_editor-hi_res_icon-upload_form-upload_button")
+  WebElement addHighResIconButton;
 
   public AppEditorPage(WebDriver driver) {
     super(driver);
@@ -232,5 +238,13 @@ public class AppEditorPage extends Page {
     } catch (NoSuchElementException e) {
       return false;
     }
+  }
+
+  public void uploadIcon(String iconPath) {
+    deleteHighResIconLink.click();
+    wait("Add a hi-res application icon").until(textIsOnPage());
+    highResIcon.sendKeys(iconPath);
+    addHighResIconButton.click();
+    wait(deleteHighResIconLink).until(isDisplayed());
   }
 }
