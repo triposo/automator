@@ -1,7 +1,7 @@
 package com.triposo.automator.itunesconnect;
 
+import java.io.FileNotFoundException;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 public class AddNewVersion extends ItunesConnectTask {
 
@@ -10,12 +10,43 @@ public class AddNewVersion extends ItunesConnectTask {
   }
 
   public void doRun() throws Exception {
-    int appleId = Integer.parseInt(getProperty("appleId"));
     String version = getProperty("version");
     String whatsnew = getProperty("whatsnew");
-    String keywords = getProperty("keywords");
-    addNewVersion(appleId, version, whatsnew, keywords);
+
+    for (Object entry : getGuides().entrySet()) {
+      Map.Entry guideEntry = (Map.Entry) entry;
+      String location = (String) guideEntry.getKey();
+      Map guide = (Map) guideEntry.getValue();
+      Map ios = (Map) guide.get("ios");
+      Integer appleId = (Integer) ios.get("apple_id");
+      String keywords = (String) ios.get("keywords");
+      if (keywords == null) {
+        keywords = "app, apps, travel, guide, free, offline, " + getProductName(location);
+      }
+      if (appleId != null && appleId > 0) {
+        System.out.println("Processing " + location);
+
+        try {
+          addNewVersion(appleId, version, whatsnew, keywords);
+        } catch (Exception e) {
+          e.printStackTrace();
+          System.out.println("Error processing, skipping: " + location);
+        }
+
+        System.out.println("Done " + location);
+      }
+    }
+
     System.out.println("All done.");
+  }
+
+  private String getProductName(String location) throws FileNotFoundException {
+    Map ios = (Map) getGuides().get(location);
+    String productName = (String) ios.get("product_name");
+    if (productName == null) {
+      productName = location.replace('_', ' ');
+    }
+    return productName;
   }
 
   private void addNewVersion(Integer appleId, String version, String whatsnew, String keywords) {
