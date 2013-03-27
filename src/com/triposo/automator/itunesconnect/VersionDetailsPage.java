@@ -100,27 +100,29 @@ class VersionDetailsPage extends Page {
   }
 
   public void uploadIphoneScreenshot(File file) {
-    iphoneScreenshotUpload.sendKeys(file.getAbsolutePath());
-    wait(iphoneUploadSpinner).until(isDisplayed());
-    wait(iphoneUploadSpinner).until(not(isDisplayed()));
+    uploadImageAndWaitForSpinner(file, iphoneScreenshotUpload, iphoneUploadSpinner);
   }
 
   public void uploadIphone4InchScreenshot(File file) {
-    iphone4InchScreenshotUpload.sendKeys(file.getAbsolutePath());
-    wait(iphone4InchUploadSpinner).until(isDisplayed());
-    wait(iphone4InchUploadSpinner).until(not(isDisplayed()));
+    uploadImageAndWaitForSpinner(file, iphone4InchScreenshotUpload, iphone4InchUploadSpinner);
   }
 
   public void uploadIpadScreenshot(File file) {
-    ipadScreenshotUpload.sendKeys(file.getAbsolutePath());
-    wait(ipadUploadSpinner).until(isDisplayed());
-    wait(ipadUploadSpinner).until(not(isDisplayed()));
+    uploadImageAndWaitForSpinner(file, ipadScreenshotUpload, ipadUploadSpinner);
   }
 
   public void uploadLargeIcon(File file) {
-    largeAppIconFile.sendKeys(file.getAbsolutePath());
-    wait(versionInfoUploadSpinner).until(isDisplayed());
-    wait(versionInfoUploadSpinner).until(not(isDisplayed()));
+    uploadImageAndWaitForSpinner(file, largeAppIconFile, versionInfoUploadSpinner);
+  }
+
+  private void uploadImageAndWaitForSpinner(File file, WebElement uploadButton, WebElement spinner) {
+    uploadButton.sendKeys(file.getAbsolutePath());
+    try {
+      wait(spinner).until(isDisplayed());
+    } catch (Exception e) {
+      // No biggie.
+    }
+    wait(spinner).until(not(isDisplayed()));
   }
 
   public void changeVersionNumber(String version) {
