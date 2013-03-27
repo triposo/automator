@@ -1,5 +1,6 @@
 package com.triposo.automator.itunesconnect;
 
+import com.google.common.base.Strings;
 import com.triposo.automator.Page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
@@ -167,9 +168,12 @@ class VersionDetailsPage extends Page {
     clickEditMetadataAndUploads();
     List<WebElement> textareas = driver.findElements(By.cssSelector("#localizationLightbox textarea"));
 //    WebElement descriptionElement = textareas.get(0);
-    WebElement whatsnewElement = textareas.get(1);
-    whatsnewElement.clear();
-    whatsnewElement.sendKeys(whatsnew);
+
+    if (!Strings.isNullOrEmpty(whatsnew)) {
+      WebElement whatsnewElement = textareas.get(1);
+      whatsnewElement.clear();
+      whatsnewElement.sendKeys(whatsnew);
+    }
 
     List<WebElement> inputs = driver.findElements(By.cssSelector("#localizationLightbox input"));
     WebElement keywordsElement = inputs.get(1);

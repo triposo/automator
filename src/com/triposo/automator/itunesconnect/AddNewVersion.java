@@ -57,10 +57,26 @@ public class AddNewVersion extends ItunesConnectTask {
     }
     VersionDetailsPage versionDetailsPage;
     if (!appSummaryPage.containsText(version)) {
-      NewVersionPage newVersionPage = appSummaryPage.clickAddVersion();
-      newVersionPage.setVersionNumber(version);
-      newVersionPage.setWhatsnew(whatsnew);
-      versionDetailsPage = newVersionPage.clickSave();
+      if (appSummaryPage.containsText("New Version")) {
+        // There is an old New Version. Update it.
+        versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
+      } else {
+        if (!appSummaryPage.containsText("Ready for Sale")) {
+          // There is an old, never launched, Current Version. Update it.
+          versionDetailsPage = appSummaryPage.clickCurrentVersionViewDetails();
+          // This field is missing for not-yet-launched apps.
+          whatsnew = null;
+          versionDetailsPage.clickEditVersionDetails();
+          versionDetailsPage.changeVersionNumber(version);
+          versionDetailsPage.clickSaveVersionDetails();
+        } else {
+          // Add a new version.
+          NewVersionPage newVersionPage = appSummaryPage.clickAddVersion();
+          newVersionPage.setVersionNumber(version);
+          newVersionPage.setWhatsnew(whatsnew);
+          versionDetailsPage = newVersionPage.clickSave();
+        }
+      }
     } else {
       try {
         versionDetailsPage = appSummaryPage.clickNewVersionViewDetails();
@@ -70,7 +86,7 @@ public class AddNewVersion extends ItunesConnectTask {
       }
     }
     versionDetailsPage.changeMetadata(whatsnew, keywords);
-    if (appSummaryPage.containsText("ERROR MESSAGE I CAN'T FIND") ||
+    if (versionDetailsPage.containsText("ERROR MESSAGE I CAN'T FIND") ||
         getProperty("appReviewForceUpdate", null) != null) {
       versionDetailsPage.changeAppReviewInformation(
           getProperty("appReviewFirstName"),

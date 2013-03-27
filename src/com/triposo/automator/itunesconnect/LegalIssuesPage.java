@@ -6,7 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 class LegalIssuesPage extends Page {
-  @FindBy(css = "input[name=encryptionHasChanged][value=false]")
+  @FindBy(css = "input[name=firstQuestionRadio][value=false]")
   WebElement encryptionHasChangedNo;
   @FindBy(css = "input[name=hasLegalIssues][value=false]") WebElement hasLegalIssuesNo;
   @FindBy(css = ".wrapper-right-button input") WebElement save;
@@ -17,7 +17,7 @@ class LegalIssuesPage extends Page {
 
   public void theUsualBlahBlah() {
     encryptionHasChangedNo.click();
-    hasLegalIssuesNo.click();
+    //hasLegalIssuesNo.click();
   }
 
   public AutoReleasePage clickSave() {
