@@ -4,6 +4,6 @@
     <conf name="compiling"/>
   </configurations>
   <dependencies>
-    <dependency org="org.seleniumhq.selenium" name="selenium-server" rev="2.29.0" conf="compiling->default"/>
+    <dependency org="org.seleniumhq.selenium" name="selenium-server" rev="2.31.0" conf="compiling->default"/>
   </dependencies>
 </ivy-module>
