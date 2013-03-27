@@ -6,7 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 class MainPage extends Page {
-  @FindBy(partialLinkText = "Manage Your Applications")
+  @FindBy(partialLinkText = "Manage Your Apps")
   WebElement manageApplications;
 
   public MainPage(WebDriver driver) {
