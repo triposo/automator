@@ -30,7 +30,11 @@ class VersionDetailsPage extends Page {
 
   // The "Edit Metadata and Uploads" lightbox.
   @FindBy(id = "fileInput_35InchRetinaDisplayScreenshots") WebElement iphoneScreenshotUpload;
-  @FindBy(css = "#35InchRetinaDisplayScreenshots .lcUploadSpinner") WebElement iphoneUploadSpinner;
+  // Normally we'd use: css = "#35InchRetinaDisplayScreenshots .lcUploadSpinner"
+  // but the 35Inch... id is invalid because it starts with a digit.
+  // So we have to use this complicated xpath:
+  @FindBy(xpath = "//div[div/input/@id = 'fileInput_35InchRetinaDisplayScreenshots']//div[contains(@class, 'lcUploadSpinner')]")
+  WebElement iphoneUploadSpinner;
   @FindBy(id = "fileInput_iPhone5") WebElement iphone4InchScreenshotUpload;
   @FindBy(css = "#iPhone5 .lcUploadSpinner") WebElement iphone4InchUploadSpinner;
   @FindBy(id = "fileInput_iPadScreenshots") WebElement ipadScreenshotUpload;
