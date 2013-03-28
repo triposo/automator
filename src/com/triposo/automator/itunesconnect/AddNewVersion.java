@@ -11,7 +11,10 @@ public class AddNewVersion extends ItunesConnectTask {
 
   public void doRun() throws Exception {
     String version = getProperty("version", "2.3.0");
-    String whatsnew = getProperty("whatsnew", "★ Completely new improved maps\n★ Faster downloads\n★ Much improved data\n★ Stream of updates from the community");
+    String whatsnew = getProperty("whatsnew");
+    if (whatsnew == null) {
+      throw new RuntimeException("Have to specify -Dwhatsnew");
+    }
 
     for (Object entry : getGuides().entrySet()) {
       Map.Entry guideEntry = (Map.Entry) entry;
