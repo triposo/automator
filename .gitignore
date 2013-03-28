@@ -7,3 +7,4 @@ local.properties
 /droidguide-screenshots
 /lib/*.jar
 /out
+/.idea
