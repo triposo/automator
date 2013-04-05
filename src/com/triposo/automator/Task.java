@@ -114,16 +114,20 @@ public abstract class Task {
     return Lists.newArrayList(only.split("[\\s,]"));
   }
 
+  protected boolean areGuideScreenshotsUploaded(File dir) {
+    File doneFile = getDoneFileForScreenshotsDir(dir);
+    boolean uploaded = doneFile.exists();
+    if (uploaded) {
+      System.out.println("Already uploaded: " + dir);
+      System.out.println("(Delete " + doneFile.getAbsolutePath() + " if incorrect.)");
+    }
+    return uploaded;
+  }
+
   protected List<File> getGuideScreenshots(File dir) {
     if (!dir.isDirectory()) {
       // No biggie.
       System.out.println("Screenshots directory missing: " + dir);
-      return Lists.newArrayList();
-    }
-    File doneFile = getDoneFileForScreenshotsDir(dir);
-    if (doneFile.exists()) {
-      System.out.println("Already uploaded: " + dir);
-      System.out.println("(Delete " + doneFile.getAbsolutePath() + " if incorrect.)");
       return Lists.newArrayList();
     }
     List<File> images = Lists.newArrayList(dir.listFiles());

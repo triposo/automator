@@ -35,52 +35,109 @@ public class UploadScreenshots extends ItunesConnectTask {
     System.out.println("All done.");
   }
 
-  private void uploadScreenshots(String location, Integer appleId)
-      throws VersionMissingException, MostRecentVersionRejectedException {
-    if (appleId != null && appleId > 0) {
-      File directoryIPhone = new File(getProperty("ios.screenshots.iphone.dir", "/nonexisting") + "/" + location);
-      File directoryIPhone4Inch = new File(getProperty("ios.screenshots.iphone-4inch.dir", "/nonexisting") + "/" + location);
-      File directoryIPad = new File(getProperty("ios.screenshots.ipad.dir", "/nonexisting") + "/" + location);
-      List<File> screenshotsIPhone = getGuideScreenshots(directoryIPhone);
-      List<File> screenshotsIPhone4Inch = getGuideScreenshots(directoryIPhone4Inch);
-      List<File> screenshotsIPad = getGuideScreenshots(directoryIPad);
-      if (screenshotsIPhone.isEmpty() && screenshotsIPad.isEmpty() && screenshotsIPhone4Inch.isEmpty()) {
-        // Nothing to upload.
+
+  private abstract class Device {
+    private final File directory;
+    private final List<File> screenshots;
+    private final boolean uploaded;
+
+    public Device(String location, String dirProperty) {
+      directory = new File(getProperty(dirProperty, "/nonexisting") + "/" + location);
+      screenshots = getGuideScreenshots(directory);
+      uploaded = areGuideScreenshotsUploaded(directory);
+    }
+
+    public boolean canBeUploaded() {
+      return !uploaded && screenshots.size() == SCREENSHOT_COUNT;
+    }
+
+    public void uploadAllIfCanBeUploaded(VersionDetailsPage versionDetailsPage) {
+      if (!canBeUploaded()) {
         return;
       }
-      VersionDetailsPage versionDetailsPage = getVersionDetailsPage(appleId);
-      versionDetailsPage.clickEditMetadataAndUploads();
-
-      if (screenshotsIPhone.size() == SCREENSHOT_COUNT) {
-        versionDetailsPage.deleteAllIphoneScreenshots();
-        for (File screenshot : screenshotsIPhone) {
-          versionDetailsPage.uploadIphoneScreenshot(screenshot);
-        }
-        markGuideScreenshotsUploaded(directoryIPhone);
-      } else {
-        System.out.println("Skipping iphone because incomplete: " + directoryIPhone + ", " + screenshotsIPhone.size());
+      deleteAll(versionDetailsPage);
+      for (File screenshot : screenshots) {
+        upload(versionDetailsPage, screenshot);
       }
-      if (screenshotsIPhone4Inch.size() == SCREENSHOT_COUNT) {
-        versionDetailsPage.deleteAllIphone4InchScreenshots();
-        for (File screenshot : screenshotsIPhone4Inch) {
-          versionDetailsPage.uploadIphone4InchScreenshot(screenshot);
-        }
-        markGuideScreenshotsUploaded(directoryIPhone4Inch);
-      } else {
-        System.out.println("Skipping iphone-4inch because incomplete: " + directoryIPhone4Inch + ", " + screenshotsIPhone4Inch.size());
-      }
-      if (screenshotsIPad.size() == SCREENSHOT_COUNT) {
-        versionDetailsPage.deleteAllIpadScreenshots();
-        for (File screenshot : screenshotsIPad) {
-          versionDetailsPage.uploadIpadScreenshot(screenshot);
-        }
-        markGuideScreenshotsUploaded(directoryIPad);
-      } else {
-        System.out.println("Skipping ipad because incomplete: " + directoryIPad + ", " + screenshotsIPad.size());
-      }
-
-      versionDetailsPage.clickSaveVersionDetails();
+      markGuideScreenshotsUploaded(directory);
     }
+
+    public abstract void deleteAll(VersionDetailsPage versionDetailsPage);
+    public abstract void upload(VersionDetailsPage versionDetailsPage, File screenshot);
+  }
+
+
+  private class IPhoneDevice extends Device {
+    public IPhoneDevice(String location) {
+      super(location, "ios.screenshots.iphone.dir");
+    }
+
+    @Override
+    public void deleteAll(VersionDetailsPage versionDetailsPage) {
+      versionDetailsPage.deleteAllIphoneScreenshots();
+    }
+
+    @Override
+    public void upload(VersionDetailsPage versionDetailsPage, File screenshot) {
+      versionDetailsPage.uploadIphoneScreenshot(screenshot);
+    }
+  }
+
+
+  private class IPhone4InchDevice extends Device {
+    public IPhone4InchDevice(String location) {
+      super(location, "ios.screenshots.iphone-4inch.dir");
+    }
+
+    @Override
+    public void deleteAll(VersionDetailsPage versionDetailsPage) {
+      versionDetailsPage.deleteAllIphone4InchScreenshots();
+    }
+
+    @Override
+    public void upload(VersionDetailsPage versionDetailsPage, File screenshot) {
+      versionDetailsPage.uploadIphone4InchScreenshot(screenshot);
+    }
+  }
+
+
+  private class IPadDevice extends Device {
+    public IPadDevice(String location) {
+      super(location, "ios.screenshots.ipad.dir");
+    }
+
+    @Override
+    public void deleteAll(VersionDetailsPage versionDetailsPage) {
+      versionDetailsPage.deleteAllIpadScreenshots();
+    }
+
+    @Override
+    public void upload(VersionDetailsPage versionDetailsPage, File screenshot) {
+      versionDetailsPage.uploadIpadScreenshot(screenshot);
+    }
+  }
+
+
+  private void uploadScreenshots(String location, Integer appleId)
+      throws VersionMissingException, MostRecentVersionRejectedException {
+    if (appleId == null || appleId <= 0) {
+      return;
+    }
+    Device iPhone = new IPhoneDevice(location);
+    Device iPhone4Inch = new IPhone4InchDevice(location);
+    Device iPad = new IPadDevice(location);
+    if (!iPhone.canBeUploaded() &&
+        !iPhone4Inch.canBeUploaded() &&
+        !iPad.canBeUploaded()) {
+      // Nothing to upload.
+      return;
+    }
+    VersionDetailsPage versionDetailsPage = getVersionDetailsPage(appleId);
+    versionDetailsPage.clickEditMetadataAndUploads();
+    iPhone.uploadAllIfCanBeUploaded(versionDetailsPage);
+    iPhone4Inch.uploadAllIfCanBeUploaded(versionDetailsPage);
+    iPad.uploadAllIfCanBeUploaded(versionDetailsPage);
+    versionDetailsPage.clickSaveVersionDetails();
   }
 
   private VersionDetailsPage getVersionDetailsPage(Integer appleId)
