@@ -58,7 +58,7 @@ public class UploadScreenshots extends ItunesConnectTask {
         }
         markGuideScreenshotsUploaded(directoryIPhone);
       } else {
-        System.out.println("Skipping iphone because incomplete: " + directoryIPhone);
+        System.out.println("Skipping iphone because incomplete: " + directoryIPhone + ", " + screenshotsIPhone.size());
       }
       if (screenshotsIPhone4Inch.size() == SCREENSHOT_COUNT) {
         versionDetailsPage.deleteAllIphone4InchScreenshots();
@@ -67,7 +67,7 @@ public class UploadScreenshots extends ItunesConnectTask {
         }
         markGuideScreenshotsUploaded(directoryIPhone4Inch);
       } else {
-        System.out.println("Skipping iphone-4inch because incomplete: " + directoryIPhone4Inch);
+        System.out.println("Skipping iphone-4inch because incomplete: " + directoryIPhone4Inch + ", " + screenshotsIPhone4Inch.size());
       }
       if (screenshotsIPad.size() == SCREENSHOT_COUNT) {
         versionDetailsPage.deleteAllIpadScreenshots();
@@ -76,7 +76,7 @@ public class UploadScreenshots extends ItunesConnectTask {
         }
         markGuideScreenshotsUploaded(directoryIPad);
       } else {
-        System.out.println("Skipping ipad because incomplete: " + directoryIPad);
+        System.out.println("Skipping ipad because incomplete: " + directoryIPad + ", " + screenshotsIPad.size());
       }
 
       versionDetailsPage.clickSaveVersionDetails();
