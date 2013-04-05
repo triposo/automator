@@ -123,7 +123,7 @@ public abstract class Task {
     File doneFile = getDoneFileForScreenshotsDir(dir);
     if (doneFile.exists()) {
       System.out.println("Already uploaded: " + dir);
-      System.out.println("(Delete " + dir.getAbsolutePath() + " if incorrect.)");
+      System.out.println("(Delete " + doneFile.getAbsolutePath() + " if incorrect.)");
       return Lists.newArrayList();
     }
     List<File> images = Lists.newArrayList(dir.listFiles());
