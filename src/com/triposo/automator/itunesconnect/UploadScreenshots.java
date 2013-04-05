@@ -1,8 +1,5 @@
 package com.triposo.automator.itunesconnect;
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.firefox.FirefoxDriver;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +21,8 @@ public class UploadScreenshots extends ItunesConnectTask {
       Integer appleId = getAppleIdOfGuide(guide);
       if (appleId != null && appleId > 0) {
         System.out.println("Processing " + location);
-        boolean newVersion = "new".equals(getProperty("ios.screenshots.app.version.to.update"));
         try {
-          uploadScreenshots(location, appleId, newVersion);
+          uploadScreenshots(location, appleId);
         } catch (Throwable e) {
           e.printStackTrace();
           System.out.println("Error processing, skipping: " + location);
@@ -39,7 +35,7 @@ public class UploadScreenshots extends ItunesConnectTask {
     System.out.println("All done.");
   }
 
-  private void uploadScreenshots(String location, Integer appleId, boolean newVersion)
+  private void uploadScreenshots(String location, Integer appleId)
       throws VersionMissingException, MostRecentVersionRejectedException {
     if (appleId != null && appleId > 0) {
       File directoryIPhone = new File(getProperty("ios.screenshots.iphone.dir", "/nonexisting") + "/" + location);
@@ -52,7 +48,7 @@ public class UploadScreenshots extends ItunesConnectTask {
         // Nothing to upload.
         return;
       }
-      VersionDetailsPage versionDetailsPage = getVersionDetailsPage(appleId, newVersion);
+      VersionDetailsPage versionDetailsPage = getVersionDetailsPage(appleId);
       versionDetailsPage.clickEditMetadataAndUploads();
 
       if (screenshotsIPhone.size() == SCREENSHOT_COUNT) {
@@ -87,22 +83,23 @@ public class UploadScreenshots extends ItunesConnectTask {
     }
   }
 
-  private VersionDetailsPage getVersionDetailsPage(Integer appleId, boolean newVersion)
+  private VersionDetailsPage getVersionDetailsPage(Integer appleId)
       throws VersionMissingException, MostRecentVersionRejectedException {
     AppSummaryPage appSummaryPage = gotoAppSummary(appleId);
     if (appSummaryPage.containsText("The most recent version of your app has been rejected")) {
       throw new MostRecentVersionRejectedException();
     }
-    if (newVersion) {
-      if (!appSummaryPage.containsText("New Version")) {
-        throw new VersionMissingException("Doesn't have a new version: " + appleId);
-      }
+    // This is a bit awkward. In theory it's possible to upload the screenshots
+    // to the Current Version or to the New Version, but:
+    // - Not yet launched apps do not have a New Version.
+    // - Already launched apps cannot have the screenshots of the Current Version updated.
+    // That's why if there is a New Version, we always upload there.
+    if (appSummaryPage.containsText("New Version")) {
       return appSummaryPage.clickNewVersionViewDetails();
-    } else {
-      if (!appSummaryPage.containsText("Current Version")) {
-        throw new VersionMissingException("Doesn't have a current version: " + appleId);
-      }
+    } else if (appSummaryPage.containsText("Current Version")) {
       return appSummaryPage.clickCurrentVersionViewDetails();
+    } else {
+      throw new VersionMissingException("Doesn't have a current or new version: " + appleId);
     }
   }
 }
